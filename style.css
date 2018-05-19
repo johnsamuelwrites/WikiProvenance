@@ -1,0 +1,103 @@
+body {
+  padding-left:10vw;
+  padding-right:10vw;
+  margin:0;
+  font-family: "Arial";
+}
+tr>th {
+  background-color : #0077c2;
+  font-size : 3vh;
+  line-height : 5vh;
+  text-align: center;
+  color : white;
+  margin:2vmax;
+  padding:0.5vmax;
+}
+tr>td {
+  font-size : 3vh;
+  line-height : 5vh;
+  text-align:left;
+}
+.path tr>th {
+  background-color : #0077c2;
+  font-size : 2vh;
+  line-height : 3vh;
+  text-align: center;
+  color : white;
+  margin:2vmax;
+  padding:0.5vmax;
+}
+.path tr>td {
+  font-size : 2vh;
+  line-height : 3vh;
+  text-align:left;
+}
+.pathlanguage {
+  background-color : #0077c2;
+  color : white;
+  text-align: center;
+}
+h1 {
+  margin:0;
+  color: #ffffff;
+  background-color: #1B80CF;
+  font-size : 6vh;
+  text-align: center;
+  height:20vh;
+  clear:both;
+}
+h1>a:link,h1> a:visited {
+  position:relative; 
+  top:5vh;
+  color: #ffffff;
+}
+p,ul {
+  font-size : 3vh;
+  line-height : 5vh;
+}
+h1 > a {
+  text-decoration: none;
+}
+h2 {
+  color:#002f6c ;
+  font-size : 4vh;
+  clear:both;
+}
+h3 {
+  color: #002f6c;
+  font-size : 3vh;
+  clear:both;
+}
+h4 {
+  color: #002f6c;
+  font-size : 2vh;
+  clear:both;
+}
+a:link, a:visited {
+  color: #1B80CF;
+}
+.property,.language,.datatype {
+  float : left;
+  background-color : #0077c2;
+  color : white;
+  overflow:unset;
+}
+.property > a, .language > a, .datatype > a{
+  color : white;
+}
+.property > a:visited, .language >  a:visited, .datatype >a:visited {
+  color : white;
+}
+img {
+  width : 50vw;
+  height : 50vh;
+}
+@media screen and (min-width: 480px) {
+  .property,.language,.datatype  {
+    font-size : 2.5vh;
+    line-height : 4vh;
+    font-weight : 400;
+    padding : 1vh;
+    margin : 0.8vh;
+  }
+}
