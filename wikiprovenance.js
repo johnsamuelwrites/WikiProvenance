@@ -70,6 +70,41 @@ function createDivReferences(divId, json) {
   statementTotal.innerHTML = "Total " + Object.keys(refs).length + " reference statements" +
        " for a total of " + results.bindings.length + " statements";
   references.appendChild(statementTotal);
+
+  var table = document.createElement("table"); 
+  var th = document.createElement("tr"); 
+  var td = document.createElement("th"); 
+  td.innerHTML = "Property";
+  th.appendChild(td);
+  td = document.createElement("th"); 
+  td.innerHTML = "Number of statements";
+  th.appendChild(td);
+  table.append(th);
+  console.log(refs);
+  console.log(Object.keys(refs));
+  data = Object.keys(refs);
+  for ( i=0; i<data.length; i++) {
+    console.log(data[i]);
+    tr = document.createElement("tr");
+
+    td = document.createElement("td"); 
+    td.setAttribute('class', "property");
+    var a = document.createElement("a"); 
+    a.setAttribute('href', data[i]);
+    var text = document.createTextNode(data[i].replace("http://www.wikidata.org/prop/",""));
+    a.append(text);
+    td.appendChild(a);
+    tr.appendChild(td);
+  
+    td = document.createElement("td"); 
+    text = null;
+    text = document.createTextNode(refs[data[i]]);
+    td.appendChild(text);
+    tr.appendChild(td);
+    table.appendChild(tr);
+    
+  }
+  references.appendChild(table);
 }
 
 function getWikiLinks(wikiproject) {
@@ -89,6 +124,7 @@ function getWikiLinks(wikiproject) {
       ?wikilink schema:about wd:` + item + `.
       FILTER REGEX(STR(?wikilink), ".` + wikiproject + `.org/wiki/") .
     }
+    order by ?wikilink
     `;
   queryWikidata(sparqlQuery, createDivWikipediaLanguageLinks, wikiproject+"links");
 }
@@ -111,6 +147,7 @@ function getExternalLinks() {
       ?property wikibase:claim ?propertyclaim.
       wd:` + item + ` ?propertyclaim []
     }
+    order by ?property
     `;
   queryWikidata(sparqlQuery, createDivExternalLinks, "externalidentifiers");
 }
