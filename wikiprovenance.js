@@ -69,6 +69,10 @@ function createDivReferences(divId, json) {
   var statementTotal = document.createElement("h3");
   statementTotal.innerHTML = "Total " + Object.keys(refs).length + " reference statements" +
        " for a total of " + results.bindings.length + " statements";
+  if (results.bindings.length != 0) {
+    statementTotal.innerHTML = statementTotal.innerHTML +
+        " ("+ ((Object.keys(refs).length * 100)/results.bindings.length).toFixed(2) + "%)"
+  }
   references.appendChild(statementTotal);
 
   var table = document.createElement("table"); 
