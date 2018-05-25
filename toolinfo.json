@@ -1,0 +1,9 @@
+
+    "name" : "WikiProvenance",
+    "title" : "WikiProvenance: Provenance information on Wikidata",
+    "description" : "Understanding provenance information on Wikidata",
+    "url" : "https://tools.wmflabs.org/wikiprovenance/index.html",
+    "keywords" : "wikidata, Wikimedia, Wikipedia, Reference, Citation, Provenance",
+    "author" : "John Samuel",
+    "repository" : "https://github.com/johnsamuelwrites/WikiProvenance"
+}
