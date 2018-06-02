@@ -4,13 +4,16 @@
    <meta charset="utf-8"/>
    <title>About WikiProvenance</title>
    <link rel="stylesheet" type="text/css" href="style.css"/>
+   <script type="text/javascript" src="wikiprovenance.js"> </script>
   </head>
   <body vocab="http://schema.org/" typeof="Website"> 
   <div id="header">
     <div id="logo"><a href="./index.html">WikiProvenance</a></div>
     <div id="headersearch">
-      <input id="headersearchtext" type="text" value="Search"/>
-      <button id="headersearchbutton" type="submit" value="Search">Search</button>
+      <form action="./search.html" method="get">
+        <input id="headersearchtext" type="text" name="search" value="search"/>
+        <button id="headersearchbutton" type="submit" value="Search">Search</button>
+      </form>
     </div>
   </div>
   <div id="content">
