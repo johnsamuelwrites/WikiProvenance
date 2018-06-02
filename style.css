@@ -119,6 +119,10 @@ tr>td {
 #content {
   top:10vh;
 }
+#searchresults {
+  font-size : 2vh;
+  line-height : 3vh;
+}
 #title {
   margin-left:15vw;
   margin-right:15vw;
