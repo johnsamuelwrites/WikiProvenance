@@ -19,7 +19,7 @@ function queryWikidata(sparqlQuery, func, divId) {
      fetch( fullUrl, { headers } ).then( body => body.json() ).then( json => {
        div.removeChild(fetchText);
        func(divId, json)
-     } );
+    } );
 }
 
 
@@ -118,11 +118,8 @@ function createDivReferences(divId, json) {
   td.innerHTML = "Number of statements";
   th.appendChild(td);
   table.append(th);
-  console.log(refs);
-  console.log(Object.keys(refs));
   data = Object.keys(refs);
   for ( i=0; i<data.length; i++) {
-    console.log(data[i]);
     tr = document.createElement("tr");
 
     td = document.createElement("td"); 
@@ -212,6 +209,71 @@ function getReferences() {
     ORDER by ?statement
     `;
   queryWikidata(sparqlQuery, createDivReferences, "references");
+}
+
+function queryMediaWiki(queryparams, func, divId) {
+     var div = document.getElementById(divId);
+     var fetchText = document.createElement("h4"); 
+     fetchText.innerHTML = "Fetching data...";
+     div.append(fetchText);
+
+     const endpointUrl = 'https://www.wikidata.org/w/api.php',
+     fullUrl = endpointUrl + '?action=' + queryparams+"&format=json";
+   
+     fetch( fullUrl, { } ).then( body => body.json() ).then( json => {
+       div.removeChild(fetchText);
+       func(divId, json)
+     } );
+}
+function createDivSearchResults(divId, json) {
+  searchresults = document.getElementById("searchresults");
+  while (searchresults.hasChildNodes()) {
+    searchresults.removeChild(searchresults.lastChild);
+  }
+  if("search" in json) {
+    for (result in json["search"]) {
+      var div = document.createElement("div"); 
+      var a = document.createElement("a"); 
+      a.setAttribute('href', "./provenance.html?item=" + json["search"][result]["id"]);
+      var text = document.createTextNode(json["search"][result]["label"]
+                 + " (" + json["search"][result]["id"] +")");
+      a.append(text);
+      div.append(a);
+      var span = document.createElement("span"); 
+      var spanText = document.createTextNode(": " +json["search"][result]["description"]+ " ");
+      span.append(spanText);
+      div.append(span);
+
+      var more = document.createElement("a"); 
+      more.setAttribute('href', json["search"][result]["concepturi"]);
+      var moretext = document.createTextNode("(More...)");
+      more.append(moretext);
+      div.append(more);
+      searchresults.append(div);
+    }
+  }
+}
+function findItem(e, form) {
+  e.preventDefault();
+  var language = "en";
+  if(window.location.search.length > 0) {
+    var reg = new RegExp("language=([^&#=]*)");
+    var value = reg.exec(window.location.search);
+    if (value != null) {
+       language = decodeURIComponent(value[1]);
+    }
+  }
+  var search = "search";
+  if(window.location.search.length > 0) {
+    var reg = new RegExp("search=([^&#=]*)");
+    var value = reg.exec(window.location.search);
+    if (value != null) {
+       search = decodeURIComponent(value[1]);
+    }
+  }
+  queryparams = "wbsearchentities&search="+search+"&language="+
+                language + "&props=url&limit=10&origin=*&format=json";
+  queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
 
 function getLinks() {
