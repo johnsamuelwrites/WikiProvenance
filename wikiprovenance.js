@@ -253,7 +253,7 @@ function createDivSearchResults(divId, json) {
     }
   }
 }
-function findItem(e, form) {
+function findItem(e) {
   e.preventDefault();
   var language = "en";
   if(window.location.search.length > 0) {
@@ -288,4 +288,12 @@ function getLinks() {
   getWikiLinks("wikibooks");
   getWikiLinks("wikiquote");
   getWikiLinks("wikispecies");
+}
+document.onkeydown = function(event) {
+  event = event || window.event;
+  if (event.keyCode == '13') {
+    var search = document.getElementById("headersearchtext").value;
+    window.location="./search.html?search="+ search;
+    findItem(event); 
+  } 
 }
