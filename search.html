@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>WikiProvenance</title>
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <script type="text/javascript" src="wikiprovenance.js">
+  </script>
+</head>
+<body onload="findItem(event, this)">
+  <div id="header">
+    <div id="logo"><a href="./index.html">WikiProvenance</a></div>
+    <div id="headersearch">
+      <form action="./search.html">
+        <input id="headersearchtext" type="text" value="Search"/>
+        <button id="headersearchbutton" type="submit" value="Search">Search</button>
+      </form>
+    </div>
+  </div>
+  <div id="content">
+    <div class="section">
+     <h2>Search Results</h2>
+     <div id="searchresults">
+     </div>
+    </div>
+  </div>
+  <div id="footer">
+    <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a href="https://mediawiki.org/">MediaWiki</a> API</p>
+  </div>
+</body>
+</html>
