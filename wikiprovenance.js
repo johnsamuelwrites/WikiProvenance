@@ -28,19 +28,48 @@ function createDivWikipediaLanguageLinks(divId, json) {
   var languages = document.getElementById(divId);
   var total = document.createElement("h3"); 
   total.innerHTML = "Total " + results.bindings.length + " languages";
+  var valuediv = document.getElementById(divId+"value");
+  valuediv.innerHTML = results.bindings.length;
   languages.appendChild(total);
+
+  var table = document.createElement("table"); 
+  var th = document.createElement("tr"); 
+  var td = document.createElement("th"); 
+  td.innerHTML = "Language";
+  th.appendChild(td);
+  td = document.createElement("th"); 
+  td.innerHTML = "Link";
+  th.appendChild(td);
+  table.append(th);
   for ( const result of results.bindings ) {
     for ( const variable of vars ) {
+      tr = document.createElement("tr");
+
+      td = document.createElement("td"); 
+      td.setAttribute('class', "property");
       var language = document.createElement("div"); 
       language.setAttribute('class', "language");
       languageText = result[variable].value;
+      link = result[variable].value;
       languageText = languageText.replace("https://", "");
       languageText = languageText.replace(/\..*/, "");
       var text = document.createTextNode(languageText);
       language.appendChild(text);
-      languages.appendChild(language);
+      td.append(language);
+      tr.appendChild(td)
+
+      td = document.createElement("td"); 
+      var a = document.createElement("a"); 
+      a.setAttribute('href', link);
+      var text = document.createTextNode(decodeURI(link));
+      a.append(text);
+      td.appendChild(a);
+      
+      tr.appendChild(td)
+      table.appendChild(tr);
     }
   }
+  languages.appendChild(table);
 }
 
 function createDivExternalLinks(divId, json) {
@@ -49,6 +78,8 @@ function createDivExternalLinks(divId, json) {
   refs = {};
   var statementTotal = document.createElement("h3");
   statementTotal.innerHTML = "Total " + results.bindings.length + " external identifiers";
+  var valuediv = document.getElementById("externalidentifiersvalue");
+  valuediv.innerHTML = results.bindings.length;
   references.appendChild(statementTotal);
 }
 
@@ -70,8 +101,11 @@ function createDivReferences(divId, json) {
   statementTotal.innerHTML = "Total " + Object.keys(refs).length + " reference statements" +
        " for a total of " + results.bindings.length + " statements";
   if (results.bindings.length != 0) {
+    percentage = ((Object.keys(refs).length * 100)/results.bindings.length).toFixed(2);
     statementTotal.innerHTML = statementTotal.innerHTML +
-        " ("+ ((Object.keys(refs).length * 100)/results.bindings.length).toFixed(2) + "%)"
+        " ("+ percentage + "%)"
+    var valuediv = document.getElementById("referencesvalue");
+    valuediv.innerHTML = percentage;
   }
   references.appendChild(statementTotal);
 
