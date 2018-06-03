@@ -81,6 +81,35 @@ function createDivExternalLinks(divId, json) {
   var valuediv = document.getElementById("externalidentifiersvalue");
   valuediv.innerHTML = results.bindings.length;
   references.appendChild(statementTotal);
+  var table = document.createElement("table"); 
+  var th = document.createElement("tr"); 
+  var td = document.createElement("th"); 
+  td.innerHTML = "External identifier";
+  th.appendChild(td);
+  td = document.createElement("th"); 
+  td.innerHTML = "Value";
+  th.appendChild(td);
+  table.append(th);
+  for ( const result of results.bindings ) { 
+    tr = document.createElement("tr");
+
+    td = document.createElement("td"); 
+    td.setAttribute('class', "property");
+    var a = document.createElement("a"); 
+    a.setAttribute('href', result["property"].value);
+    var text = document.createTextNode(result["property"].value.replace("http://www.wikidata.org/entity/",""));
+    a.append(text);
+    td.appendChild(a);
+    tr.appendChild(td);
+  
+    td = document.createElement("td"); 
+    text = null;
+    text = document.createTextNode(result["value"].value);
+    td.appendChild(text);
+    tr.appendChild(td);
+    table.appendChild(tr);
+  }
+  references.appendChild(table);
 }
 
 function createDivReferences(divId, json) {
@@ -175,14 +204,16 @@ function getExternalLinks() {
   }
 
   const sparqlQuery = `
-    SELECT ?property 
+     SELECT ?property ?value 
     {
+      ?qualifier rdf:type owl:DatatypeProperty.
       ?property rdf:type wikibase:Property;
          wikibase:propertyType wikibase:ExternalId.
       ?property wikibase:claim ?propertyclaim.
-      wd:` + item + ` ?propertyclaim []
+      wd:`+ item+ ` ?propertyclaim [?qualifier ?value].
+     
     }
-    order by ?property
+order by ?property
     `;
   queryWikidata(sparqlQuery, createDivExternalLinks, "externalidentifiers");
 }
