@@ -18,7 +18,7 @@ body {
   position:relative;
   text-align:center;
   width:10vw;
-  height:18vh;
+  height:20vh;
   float:left;
   background-color:#64afff;
   color:#000000;
@@ -31,7 +31,7 @@ body {
   border-left: 1px solid grey;
 }
 .statisticsvalue {
-  font-size:7vh;
+  font-size:6vh;
   font-weight:bold;
 }
 #sidebar {
@@ -195,4 +195,59 @@ img {
     margin : 0.8vh;
     overflow: unset;
   }
+}
+@media screen and (max-width: 480px) {
+  .property,.language,.datatype  {
+    font-size : 2vh;
+    line-height : 2vh;
+    padding : 0.5vh;
+    width:2vw;
+    margin : 0.8vh;
+    overflow: unset;
+  }
+  .section {
+    padding:1vh;
+    margin-left:1vw;
+    margin-right:1vw;
+  }
+  #sidebar {
+    display:none;
+  }
+  .statistics {
+    width:20vw;
+    height:20vh;
+    margin-right:1vw;
+    margin-left:1vw;
+    margin-top:1vw;
+    font-size:1.8vh;
+  }
+  .statisticsvalue {
+    font-size:3.5vh;
+    font-weight:bold;
+  }
+  #logo {
+    font-size:3.0vh;
+  }
+  #header {
+    bottom:0;
+  }
+  #headersearch {
+    position:fixed;
+    right:1vw;
+    margin-top:1vh;
+    height:7vh;
+  }
+  #headersearchtext {
+    right:3vw;
+    height:5vh;
+    width:30vw;
+    font-size:1.5vh;
+  }
+  #headersearchbutton {
+    color:#005cb2;
+    text-transform:none;
+    width:15vw;
+    height:6vh;
+    font-size:1.5vh;
+ }
 }
