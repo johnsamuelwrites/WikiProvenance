@@ -27,7 +27,12 @@ function createDivWikipediaLanguageLinks(divId, json) {
   const { head: { vars }, results } = json;
   var languages = document.getElementById(divId);
   var total = document.createElement("h3"); 
-  total.innerHTML = "Total " + results.bindings.length + " languages";
+  if(divId.includes("commons") ) {
+    total.innerHTML = "Total " + results.bindings.length + " category";
+  }
+  else {
+    total.innerHTML = "Total " + results.bindings.length + " languages";
+  }
   var valuediv = document.getElementById(divId+"value");
   valuediv.innerHTML = results.bindings.length;
   languages.appendChild(total);
@@ -186,10 +191,11 @@ function getWikiLinks(wikiproject) {
     WHERE 
     {
       ?wikilink schema:about wd:` + item + `.
-      FILTER REGEX(STR(?wikilink), ".` + wikiproject + `.org/wiki/") .
+      FILTER REGEX(STR(?wikilink), "` + wikiproject + `.org/") .
     }
     order by ?wikilink
     `;
+  console.log(wikiproject);
   queryWikidata(sparqlQuery, createDivWikipediaLanguageLinks, wikiproject+"links");
 }
 
@@ -311,6 +317,7 @@ function getLinks() {
   getExternalLinks();
   getReferences();
   getWikiLinks("wikipedia");
+  getWikiLinks("commons.wikimedia");
   getWikiLinks("wikivoyage");
   getWikiLinks("wikinews");
   getWikiLinks("wikisource");
