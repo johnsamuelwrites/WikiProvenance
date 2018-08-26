@@ -462,15 +462,39 @@ function findItem(e) {
   queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
 
+function getItem() {
+  var language = "en";
+  if(window.location.search.length > 0) {
+    var reg = new RegExp("language=([^&#=]*)");
+    var value = reg.exec(window.location.search);
+    if (value != null) {
+       language = decodeURIComponent(value[1]);
+    }
+  }
+  var search = "search";
+  if(window.location.search.length > 0) {
+    var reg = new RegExp("search=([^&#=]*)");
+    var value = reg.exec(window.location.search);
+    if (value != null) {
+       search = decodeURIComponent(value[1]);
+    }
+  }
+  queryparams = "wbsearchentities&search="+search+"&language="+
+                language + "&props=url&limit=10&origin=*&format=json";
+  queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
+}
+
 function getLinksAndCompare() {
   var compare = "Q1339, Q254";
   if(window.location.search.length > 0) {
     var reg = new RegExp("compare=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       compare = decodeURIComponent(value[1]);
+       compare = decodeURIComponent(unescape(value[1]));
+       compare = compare.replace("+", "");
     }
   }
+  console.log(compare);
   items = compare.split(",");
   for (var i in items) {
     item = items[i];
@@ -498,9 +522,20 @@ function getLinks() {
 }
 document.onkeydown = function(event) {
   event = event || window.event;
+  console.log(event.target.id);
   if (event.keyCode == '13') {
     var search = document.getElementById("headersearchtext").value;
-    window.location="./search.html?search="+ search;
-    findItem(event); 
+    if(window.location.toString().includes("compare.html")) {
+      getLinksAndCompare(event); 
+    }
+    else {
+      if(event.target.id=== "searchtext") {
+        getItem(event);
+      }
+      else {
+        window.location="./search.html?search="+ search;
+        findItem(event); 
+      }
+    }
   } 
 }

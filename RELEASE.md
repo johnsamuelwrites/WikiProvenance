@@ -6,6 +6,7 @@
 * Add sidebar
 * Support for comparison of statistics (2 or more items)
 * Add Commons related statistics
+* Handling keydown events correctly (multiple search boxes)
 
 # v0.4
 ===============================================================================
