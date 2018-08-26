@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="style.css"/>
   <script type="text/javascript" src="wikiprovenance.js"> </script>
 </head>
-<body onload="getLinks()">
+<body onload="getLinksAndCompare()">
   <div id="header">
     <div id="logo"><a href="./index.html">WikiProvenance</a></div>
     <div id="headersearch">
@@ -37,139 +37,90 @@
   </div>
   <div id="content">
     <div class="section" id="statisticssection">
-     <h2>Statistics on sources describing <span id="itemCode"></span></h2>
-     <h3><span id="itemLabel"></span> </h3>
+     <h2>Comparison of statistics on sources describing <div id="itemLabel"></div></h2>
      <a class="statisticslink" href="#statisticssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="referencesvalue">0</div>
         <div>% statements with references on Wikidata</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#externalidentifierssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="externalidentifiersvalue">0</div>
         <div>external identifiers</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikipedialinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikipedialinksvalue">0</div>
         <div>articles on Wikipedia</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#commons.wikimedialinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="commons.wikimedialinksvalue">0</div>
         <div>categories on Commons</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikinewslinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikinewslinksvalue">0</div>
         <div>articles on Wikinews</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikibookslinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikibookslinksvalue">0</div>
         <div>articles on Wikibooks</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikisourcelinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikisourcelinksvalue">0</div>
         <div>articles on Wikisource</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wiktionarylinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wiktionarylinksvalue">0</div>
         <div>articles on Wiktionary</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikiquotelinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikiquotelinksvalue">0</div>
         <div>articles on Wikiquote</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikivoyagelinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikivoyagelinksvalue">0</div>
         <div>articles on Wikivoyage</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikiversitylinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikiversitylinksvalue">0</div>
         <div>articles on Wikiversity</div>
        </div>
      </a>
      <div class="separator"></div>
      <a class="statisticslink" href="#wikispecieslinkssection">
-       <div class="statistics">
+       <div class="comparisonstatistics">
         <div class="statisticsvalue" id="wikispecieslinksvalue">0</div>
         <div>articles on Wikispecies</div>
        </div>
      </a>
-    </div>
-    <div class="section" id="referencessection">
-     <h2>Statements and references</h2>
-     <div id="references"></div>
-    </div>
-    <div class="section" id="externalidentifierssection">
-     <h2>External identifiers</h2>
-     <div id="externalidentifiers"></div>
-    </div>
-    <div class="section" id="commons.wikimedialinkssection">
-     <h2>Commons Links</h2>
-     <div id="commons.wikimedialinks"></div>
-    </div>
-    <div class="section" id="wikipedialinkssection">
-     <h2>Wikipedia Links</h2>
-     <div id="wikipedialinks"></div>
-    </div>
-    <div class="section" id="wikinewslinkssection">
-     <h2>Wikinews Links</h2>
-     <div id="wikinewslinks"> </div>
-    </div>
-    <div class="section" id="wikibookslinkssection">
-     <h2>Wikibooks Links</h2>
-     <div id="wikibookslinks"> </div>
-    </div>
-    <div class="section" id="wikivoyagelinkssection">
-     <h2>Wikivoyage Links</h2>
-     <div id="wikivoyagelinks"> </div>
-    </div>
-    <div class="section" id="wikisourcelinkssection">
-     <h2>Wikisource Links</h2>
-     <div id="wikisourcelinks"> </div>
-    </div>
-    <div class="section" id="wiktionarylinkssection">
-     <h2>Wiktionary Links</h2>
-     <div id="wiktionarylinks"> </div>
-    </div>
-    <div class="section" id="wikiversitylinkssection">
-     <h2>Wikiversity Links</h2>
-     <div id="wikiversitylinks"> </div>
-    </div>
-    <div class="section" id="wikiquotelinkssection">
-     <h2>Wikiquote Links</h2>
-     <div id="wikiquotelinks"> </div>
-    </div>
-    <div class="section" id="wikispecieslinkssection">
-     <h2>Wikispecies Links</h2>
-     <div id="wikispecieslinks"> </div>
     </div>
   </div>
   <div id="footer">

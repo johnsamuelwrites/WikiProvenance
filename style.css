@@ -30,6 +30,22 @@ body {
   border-right: 1px solid grey;
   border-left: 1px solid grey;
 }
+.comparisonstatistics {
+  position:relative;
+  text-align:center;
+  width:10vw;
+  float:left;
+  background-color:#64afff;
+  color:#000000;
+  margin-right:2vw;
+  margin-left:2vw;
+  margin-top:1vw;
+  margin-bottom:3vw;
+  padding:0;
+  display:inline;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+}
 .statisticsvalue {
   font-size:5vh;
   font-weight:bold;
@@ -226,6 +242,10 @@ img {
     height:14vh;
     font-size:1.8vh;
   }
+  .comparisonstatistics {
+    width:20vw;
+    font-size:1.8vh;
+  }
   .statisticsvalue {
     font-size:3.5vh;
     font-weight:bold;
@@ -268,6 +288,10 @@ img {
     height:14vh;
     font-size:2.5vh;
   }
+  .comparisonstatistics {
+    height:14vh;
+    font-size:2.5vh;
+  }
   .statisticsvalue {
     font-size:3.5vh;
     font-weight:bold;
@@ -295,6 +319,10 @@ img {
   .statistics {
     width:15vw;
     height:14vh;
+    font-size:1.5vh;
+  }
+  .comparisonstatistics {
+    width:15vw;
     font-size:1.5vh;
   }
   .statisticsvalue {
