@@ -1,11 +1,12 @@
-function queryMediaWiki(queryparams, func, lang, divId, url) {
+function queryMediaWiki(queryparams, func, lang, title, divId, url) {
      var div = document.getElementById(divId);
      var fetchText = document.createElement("h4"); 
      fetchText.innerHTML = "Fetching data...";
      div.append(fetchText);
 
      const endpointUrl = 'https://' + lang + ".wikipedia.org/w/api.php',
-     fullUrl = endpointUrl + '?action=' + queryparams+"&format=json";
+     fullUrl = endpointUrl + '?action=parse&page=' +
+               title + '&prop=wikitext&format=json";
    
      fetch( fullUrl, { } ).then( body => body.json() ).then( json => {
        div.removeChild(fetchText);
