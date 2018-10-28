@@ -4,9 +4,9 @@
   <meta charset="utf-8"/>
   <title>WikiProvenance</title>
   <link rel="stylesheet" type="text/css" href="style.css"/>
-  <script type="text/javascript" src="wikiprovenance.js"> </script>
+  <script type="text/javascript" src="mwwikiprov.js"> </script>
 </head>
-<body onload="getLinks()">
+<body onload="analyseReferences()">
   <div id="header">
     <div id="logo"><a href="./index.html">WikiProvenance</a></div>
     <div id="headersearch">
@@ -28,11 +28,10 @@
     <div class="section" id="statisticssection">
      <h2>References describing <span id="itemCode"></span></h2>
      <h3><span id="itemLabel"></span> </h3>
-     <div class="separator"></div>
-     <a class="referenceslink" href="#referencesssection">
-       <div class="references">
+     <div href="#referencessection">
+       <div id="references">
        </div>
-     </a>
+     </div>
   </div>
   <div id="footer">
     <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a href="https://mediawiki.org/">MediaWiki</a> API</p>

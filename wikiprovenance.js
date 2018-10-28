@@ -95,7 +95,9 @@ function createDivWikipediaLanguageLinks(divId, json) {
 
       td = document.createElement("td"); 
       var a = document.createElement("a"); 
-      a.setAttribute('href', link);
+      //a.setAttribute('href', link);
+      a.setAttribute('href', "./references.html?url="
+                  + link);
       var text = document.createTextNode(decodeURI(link));
       a.append(text);
       td.appendChild(a);
