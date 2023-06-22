@@ -1,19 +1,19 @@
 function queryMediaWiki(queryparams, func, lang, divId, url) {
-     var div = document.getElementById(divId);
-     var fetchText = document.createElement("h4"); 
-     fetchText.innerHTML = "Fetching data...";
-     div.append(fetchText);
+  var div = document.getElementById(divId);
+  var fetchText = document.createElement("h4");
+  fetchText.innerHTML = "Fetching data...";
+  div.append(fetchText);
 
-     const endpointUrl = 'https://' + lang + ".wikipedia.org/w/api.php";
-     fullUrl = endpointUrl + queryparams + '&origin=*&format=json';
-     console.log(fullUrl);
-   
-   
-     fetch( fullUrl, { } ).then( body => body.json() ).then( json => {
-       div.removeChild(fetchText);
-       console.log(json);
-       func(divId, json, url);
-     } );
+  const endpointUrl = 'https://' + lang + ".wikipedia.org/w/api.php";
+  fullUrl = endpointUrl + queryparams + '&origin=*&format=json';
+  console.log(fullUrl);
+
+
+  fetch(fullUrl, {}).then(body => body.json()).then(json => {
+    div.removeChild(fetchText);
+    console.log(json);
+    func(divId, json, url);
+  });
 }
 
 function showReferences(divId, json, url) {
@@ -27,22 +27,22 @@ function showReferences(divId, json, url) {
   var count = 0;
 
   //Getting the count of references
-  while((pos = tempString.search(regex)) > -1) {
+  while ((pos = tempString.search(regex)) > -1) {
     count++;
-    console.log( "count: " + count + " :" + pos);
+    console.log("count: " + count + " :" + pos);
     tempString = tempString.substring(pos + 1);
   }
 
   tempString = str;
   var count = 0;
-  while((referenceStrings  = regex.exec(tempString)) != null) {
+  while ((referenceStrings = regex.exec(tempString)) != null) {
     count++;
-    console.log("count "+ count + " :" + referenceStrings[0]);
+    console.log("count " + count + " :" + referenceStrings[0]);
   }
 
   var referenceDetails = document.getElementById(divId);
   console.log(referenceDetails);
-  var referenceCount = document.createElement("p"); 
+  var referenceCount = document.createElement("p");
   var referenceCountTxt = document.createTextNode("Total " + count + " references");
   referenceCount.append(referenceCountTxt);
   console.log(referenceCount);
@@ -51,11 +51,11 @@ function showReferences(divId, json, url) {
 
 function analyseReferences() {
   url = "https://en.wikipedia.org/wiki/Main_Page";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("url=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       url = decodeURIComponent(value[1]);
+      url = decodeURIComponent(value[1]);
     }
   }
   var regex = /wiki\/.*$/;
@@ -70,6 +70,6 @@ function analyseReferences() {
   var lang = url.replace("https://", "");
   lang = lang.replace(/.wikipedia.*/, "");
   console.log(lang);
-  
+
   queryMediaWiki(queryparams, showReferences, lang, "references", url);
 }

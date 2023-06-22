@@ -3,48 +3,48 @@
  */
 
 function queryWikidata(sparqlQuery, func, divId) {
-     /*
-      * Following script is a modified form of automated
-      * script generated from Wikidata Query services
-      */
-     var div = document.getElementById(divId);
-     var fetchText = document.createElement("h4"); 
-     fetchText.innerHTML = "Fetching data...";
-     div.append(fetchText);
+  /*
+   * Following script is a modified form of automated
+   * script generated from Wikidata Query services
+   */
+  var div = document.getElementById(divId);
+  var fetchText = document.createElement("h4");
+  fetchText.innerHTML = "Fetching data...";
+  div.append(fetchText);
 
-     const endpointUrl = 'https://query.wikidata.org/sparql',
-     fullUrl = endpointUrl + '?query=' + encodeURIComponent( sparqlQuery )+"&format=json";
-     headers = { 'Accept': 'application/sparql-results+json' };
+  const endpointUrl = 'https://query.wikidata.org/sparql',
+    fullUrl = endpointUrl + '?query=' + encodeURIComponent(sparqlQuery) + "&format=json";
+  headers = { 'Accept': 'application/sparql-results+json' };
 
-     fetch( fullUrl, { headers } ).then( body => body.json() ).then( json => {
-       div.removeChild(fetchText);
-       func(divId, json)
-    } );
+  fetch(fullUrl, { headers }).then(body => body.json()).then(json => {
+    div.removeChild(fetchText);
+    func(divId, json)
+  });
 }
 
 function createDivWikiStatisticsLinks(divId, json) {
   const { head: { vars }, results } = json;
   var languages = document.getElementById(divId);
-  var projects = [ "wikipedia", "commons.wikimedia", "wikivoyage", "wikinews",
+  var projects = ["wikipedia", "commons.wikimedia", "wikivoyage", "wikinews",
     "wikisource", "wiktionary", "wikiversity", "wikibooks", "wikiquote",
     "wikispecies"];
   var count = {};
   for (var i in projects) {
     count[projects[i]] = 0;
-  } 
-  for ( const result of results.bindings ) {
-    for ( const variable of vars ) {
+  }
+  for (const result of results.bindings) {
+    for (const variable of vars) {
       for (var i in projects) {
         if (result[variable].value.includes(projects[i])) {
-          count[projects[i]] = count [projects[i]] + 1;
+          count[projects[i]] = count[projects[i]] + 1;
         }
       }
     }
   }
   for (var i in projects) {
-    var valuediv = document.getElementById(projects[i]+"linksvalue");
-    var valuespin = document.createElement("div"); 
-      valuespin.innerHTML = " " + count[projects[i]] + " ";
+    var valuediv = document.getElementById(projects[i] + "linksvalue");
+    var valuespin = document.createElement("div");
+    valuespin.innerHTML = " " + count[projects[i]] + " ";
     if (valuediv.childElementCount == 0) {
       valuediv.innerHTML = "";
     }
@@ -56,33 +56,33 @@ function createDivWikiStatisticsLinks(divId, json) {
 function createDivWikipediaLanguageLinks(divId, json) {
   const { head: { vars }, results } = json;
   var languages = document.getElementById(divId);
-  var total = document.createElement("h3"); 
-  if(divId.includes("commons") ) {
+  var total = document.createElement("h3");
+  if (divId.includes("commons")) {
     total.innerHTML = "Total " + results.bindings.length + " category";
   }
   else {
     total.innerHTML = "Total " + results.bindings.length + " languages";
   }
-  var valuediv = document.getElementById(divId+"value");
+  var valuediv = document.getElementById(divId + "value");
   valuediv.innerHTML = results.bindings.length;
   languages.appendChild(total);
 
-  var table = document.createElement("table"); 
-  var th = document.createElement("tr"); 
-  var td = document.createElement("th"); 
+  var table = document.createElement("table");
+  var th = document.createElement("tr");
+  var td = document.createElement("th");
   td.innerHTML = "Language";
   th.appendChild(td);
-  td = document.createElement("th"); 
+  td = document.createElement("th");
   td.innerHTML = "Link";
   th.appendChild(td);
   table.append(th);
-  for ( const result of results.bindings ) {
-    for ( const variable of vars ) {
+  for (const result of results.bindings) {
+    for (const variable of vars) {
       tr = document.createElement("tr");
 
-      td = document.createElement("td"); 
+      td = document.createElement("td");
       td.setAttribute('class', "property");
-      var language = document.createElement("div"); 
+      var language = document.createElement("div");
       language.setAttribute('class', "language");
       languageText = result[variable].value;
       link = result[variable].value;
@@ -93,15 +93,15 @@ function createDivWikipediaLanguageLinks(divId, json) {
       td.append(language);
       tr.appendChild(td)
 
-      td = document.createElement("td"); 
-      var a = document.createElement("a"); 
+      td = document.createElement("td");
+      var a = document.createElement("a");
       //a.setAttribute('href', link);
       a.setAttribute('href', "./references.html?url="
-                  + link);
+        + link);
       var text = document.createTextNode(decodeURI(link));
       a.append(text);
       td.appendChild(a);
-      
+
       tr.appendChild(td)
       table.appendChild(tr);
     }
@@ -112,7 +112,7 @@ function createDivWikipediaLanguageLinks(divId, json) {
 function createDivExternalLinksCount(divId, json) {
   const { head: { vars }, results } = json;
   var valuediv = document.getElementById("externalidentifiersvalue");
-  var valuespin = document.createElement("div"); 
+  var valuespin = document.createElement("div");
   valuespin.innerHTML = " " + results.bindings.length + " ";
   if (valuediv.childElementCount == 0) {
     valuediv.innerHTML = "";
@@ -129,28 +129,28 @@ function createDivExternalLinks(divId, json) {
   var valuediv = document.getElementById("externalidentifiersvalue");
   valuediv.innerHTML = results.bindings.length;
   references.appendChild(statementTotal);
-  var table = document.createElement("table"); 
-  var th = document.createElement("tr"); 
-  var td = document.createElement("th"); 
+  var table = document.createElement("table");
+  var th = document.createElement("tr");
+  var td = document.createElement("th");
   td.innerHTML = "External identifier";
   th.appendChild(td);
-  td = document.createElement("th"); 
+  td = document.createElement("th");
   td.innerHTML = "Value";
   th.appendChild(td);
   table.append(th);
-  for ( const result of results.bindings ) { 
+  for (const result of results.bindings) {
     tr = document.createElement("tr");
 
-    td = document.createElement("td"); 
+    td = document.createElement("td");
     td.setAttribute('class', "property");
-    var a = document.createElement("a"); 
+    var a = document.createElement("a");
     a.setAttribute('href', result["property"].value);
-    var text = document.createTextNode(result["property"].value.replace("http://www.wikidata.org/entity/",""));
+    var text = document.createTextNode(result["property"].value.replace("http://www.wikidata.org/entity/", ""));
     a.append(text);
     td.appendChild(a);
     tr.appendChild(td);
-  
-    td = document.createElement("td"); 
+
+    td = document.createElement("td");
     text = null;
     text = document.createTextNode(result["value"].value);
     td.appendChild(text);
@@ -163,21 +163,21 @@ function createDivExternalLinks(divId, json) {
 function createDivReferencesCount(divId, json) {
   const { head: { vars }, results } = json;
   refs = {};
-  for ( const result of results.bindings ) { 
+  for (const result of results.bindings) {
     if (result["reference"] != undefined) {
-      if (result['prop'].value in refs){
-        refs[result['prop'].value] +=1;
+      if (result['prop'].value in refs) {
+        refs[result['prop'].value] += 1;
       }
       else {
-        refs[result['prop'].value] =1;
+        refs[result['prop'].value] = 1;
       }
     }
   }
   if (results.bindings.length != 0) {
     console.log("hello");
-    percentage = ((Object.keys(refs).length * 100)/results.bindings.length).toFixed(2);
+    percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
     var valuediv = document.getElementById("referencesvalue");
-    var valuespin = document.createElement("div"); 
+    var valuespin = document.createElement("div");
     valuespin.innerHTML = " " + percentage + " ";
     if (valuediv.childElementCount == 0) {
       valuediv.innerHTML = "";
@@ -190,67 +190,67 @@ function createDivReferences(divId, json) {
   const { head: { vars }, results } = json;
   var references = document.getElementById(divId);
   refs = {};
-  for ( const result of results.bindings ) { 
+  for (const result of results.bindings) {
     if (result["reference"] != undefined) {
-      if (result['prop'].value in refs){
-        refs[result['prop'].value] +=1;
+      if (result['prop'].value in refs) {
+        refs[result['prop'].value] += 1;
       }
       else {
-        refs[result['prop'].value] =1;
+        refs[result['prop'].value] = 1;
       }
     }
   }
   var statementTotal = document.createElement("h3");
   statementTotal.innerHTML = "Total " + Object.keys(refs).length + " reference statements" +
-       " for a total of " + results.bindings.length + " statements";
+    " for a total of " + results.bindings.length + " statements";
   if (results.bindings.length != 0) {
-    percentage = ((Object.keys(refs).length * 100)/results.bindings.length).toFixed(2);
+    percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
     statementTotal.innerHTML = statementTotal.innerHTML +
-        " ("+ percentage + "%)"
+      " (" + percentage + "%)"
     var valuediv = document.getElementById("referencesvalue");
     valuediv.innerHTML = percentage;
   }
   references.appendChild(statementTotal);
 
-  var table = document.createElement("table"); 
-  var th = document.createElement("tr"); 
-  var td = document.createElement("th"); 
+  var table = document.createElement("table");
+  var th = document.createElement("tr");
+  var td = document.createElement("th");
   td.innerHTML = "Property";
   th.appendChild(td);
-  td = document.createElement("th"); 
+  td = document.createElement("th");
   td.innerHTML = "Number of statements";
   th.appendChild(td);
   table.append(th);
   data = Object.keys(refs);
-  for ( i=0; i<data.length; i++) {
+  for (i = 0; i < data.length; i++) {
     tr = document.createElement("tr");
 
-    td = document.createElement("td"); 
+    td = document.createElement("td");
     td.setAttribute('class', "property");
-    var a = document.createElement("a"); 
+    var a = document.createElement("a");
     a.setAttribute('href', data[i]);
-    var text = document.createTextNode(data[i].replace("http://www.wikidata.org/prop/",""));
+    var text = document.createTextNode(data[i].replace("http://www.wikidata.org/prop/", ""));
     a.append(text);
     td.appendChild(a);
     tr.appendChild(td);
-  
-    td = document.createElement("td"); 
+
+    td = document.createElement("td");
     text = null;
     text = document.createTextNode(refs[data[i]]);
     td.appendChild(text);
     tr.appendChild(td);
     table.appendChild(tr);
-    
+
   }
   references.appendChild(table);
 }
 
 function getAllWikiLinks(item = "Q1339") {
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("item=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       item = decodeURIComponent(value[1]);
+      item = decodeURIComponent(value[1]);
     }
   }
 
@@ -266,11 +266,11 @@ function getAllWikiLinks(item = "Q1339") {
 }
 
 function getWikiLinks(wikiproject, item = "Q1339") {
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("item=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       item = decodeURIComponent(value[1]);
+      item = decodeURIComponent(value[1]);
     }
   }
 
@@ -283,16 +283,16 @@ function getWikiLinks(wikiproject, item = "Q1339") {
     }
     order by ?wikilink
     `;
-  queryWikidata(sparqlQuery, createDivWikipediaLanguageLinks, wikiproject+"links");
+  queryWikidata(sparqlQuery, createDivWikipediaLanguageLinks, wikiproject + "links");
 }
 
 function getExternalLinks() {
   var item = "Q1339";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("item=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       item = decodeURIComponent(value[1]);
+      item = decodeURIComponent(value[1]);
     }
   }
 
@@ -303,7 +303,7 @@ function getExternalLinks() {
       ?property rdf:type wikibase:Property;
          wikibase:propertyType wikibase:ExternalId.
       ?property wikibase:claim ?propertyclaim.
-      wd:`+ item+ ` ?propertyclaim [?qualifier ?value].
+      wd:`+ item + ` ?propertyclaim [?qualifier ?value].
      
     }
 order by ?property
@@ -311,7 +311,7 @@ order by ?property
   queryWikidata(sparqlQuery, createDivExternalLinks, "externalidentifiers");
 }
 
-function getExternalLinksCount(item="Q1339") {
+function getExternalLinksCount(item = "Q1339") {
   const sparqlQuery = `
      SELECT ?property ?value 
     {
@@ -319,7 +319,7 @@ function getExternalLinksCount(item="Q1339") {
       ?property rdf:type wikibase:Property;
          wikibase:propertyType wikibase:ExternalId.
       ?property wikibase:claim ?propertyclaim.
-      wd:`+ item+ ` ?propertyclaim [?qualifier ?value].
+      wd:`+ item + ` ?propertyclaim [?qualifier ?value].
      
     }
 order by ?property
@@ -330,9 +330,9 @@ order by ?property
 function createSpanLabel(divId, json) {
   const { head: { vars }, results } = json;
   var label = document.getElementById("itemLabel");
-  for ( const result of results.bindings ) {
-    for ( const variable of vars ) {
-      var valuespin = document.createElement("span"); 
+  for (const result of results.bindings) {
+    for (const variable of vars) {
+      var valuespin = document.createElement("span");
       valuespin.innerHTML = " * " + result[variable].value + " * ";
       if (label.childElementCount == 0) {
         label.innerHTML = "";
@@ -344,11 +344,11 @@ function createSpanLabel(divId, json) {
 
 function getLabel(item) {
   lang = "en";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("lang=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       lang = decodeURIComponent(value[1]);
+      lang = decodeURIComponent(value[1]);
     }
   }
   const sparqlQuery = `
@@ -356,13 +356,13 @@ function getLabel(item) {
       WHERE
       {
         wd:`+ item + ` rdfs:label ?label;
-        FILTER(lang(?label) = "`+ lang +`").
+        FILTER(lang(?label) = "`+ lang + `").
       }
       `;
   queryWikidata(sparqlQuery, createSpanLabel, "statisticssection");
 }
 
-function getReferenceCount(item="Q1339") {
+function getReferenceCount(item = "Q1339") {
   const sparqlQuery = `
     SELECT ?statement ?prop ?reference
     {
@@ -375,12 +375,12 @@ function getReferenceCount(item="Q1339") {
   queryWikidata(sparqlQuery, createDivReferencesCount, "statisticssection");
 }
 
-function getReferences(item="Q1339") {
-  if(window.location.search.length > 0) {
+function getReferences(item = "Q1339") {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("item=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       item = decodeURIComponent(value[1]);
+      item = decodeURIComponent(value[1]);
     }
   }
   var div = document.getElementById("itemCode");
@@ -400,39 +400,39 @@ function getReferences(item="Q1339") {
 }
 
 function queryMediaWiki(queryparams, func, divId) {
-     var div = document.getElementById(divId);
-     var fetchText = document.createElement("h4"); 
-     fetchText.innerHTML = "Fetching data...";
-     div.append(fetchText);
+  var div = document.getElementById(divId);
+  var fetchText = document.createElement("h4");
+  fetchText.innerHTML = "Fetching data...";
+  div.append(fetchText);
 
-     const endpointUrl = 'https://www.wikidata.org/w/api.php',
-     fullUrl = endpointUrl + '?action=' + queryparams+"&format=json";
-   
-     fetch( fullUrl, { } ).then( body => body.json() ).then( json => {
-       div.removeChild(fetchText);
-       func(divId, json)
-     } );
+  const endpointUrl = 'https://www.wikidata.org/w/api.php',
+    fullUrl = endpointUrl + '?action=' + queryparams + "&format=json";
+
+  fetch(fullUrl, {}).then(body => body.json()).then(json => {
+    div.removeChild(fetchText);
+    func(divId, json)
+  });
 }
 function createDivSearchResults(divId, json) {
   searchresults = document.getElementById("searchresults");
   while (searchresults.hasChildNodes()) {
     searchresults.removeChild(searchresults.lastChild);
   }
-  if("search" in json) {
+  if ("search" in json) {
     for (result in json["search"]) {
-      var div = document.createElement("div"); 
-      var a = document.createElement("a"); 
+      var div = document.createElement("div");
+      var a = document.createElement("a");
       a.setAttribute('href', "./provenance.html?item=" + json["search"][result]["id"]);
       var text = document.createTextNode(json["search"][result]["label"]
-                 + " (" + json["search"][result]["id"] +")");
+        + " (" + json["search"][result]["id"] + ")");
       a.append(text);
       div.append(a);
-      var span = document.createElement("span"); 
-      var spanText = document.createTextNode(": " +json["search"][result]["description"]+ " ");
+      var span = document.createElement("span");
+      var spanText = document.createTextNode(": " + json["search"][result]["description"] + " ");
       span.append(spanText);
       div.append(span);
 
-      var more = document.createElement("a"); 
+      var more = document.createElement("a");
       more.setAttribute('href', json["search"][result]["concepturi"]);
       var moretext = document.createTextNode("(More...)");
       more.append(moretext);
@@ -444,56 +444,56 @@ function createDivSearchResults(divId, json) {
 function findItem(e) {
   e.preventDefault();
   var language = "en";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("language=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       language = decodeURIComponent(value[1]);
+      language = decodeURIComponent(value[1]);
     }
   }
   var search = "search";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("search=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       search = decodeURIComponent(value[1]);
+      search = decodeURIComponent(value[1]);
     }
   }
-  queryparams = "wbsearchentities&search="+search+"&language="+
-                language + "&props=url&limit=10&origin=*&format=json";
+  queryparams = "wbsearchentities&search=" + search + "&language=" +
+    language + "&props=url&limit=10&origin=*&format=json";
   queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
 
 function getItem() {
   var language = "en";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("language=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       language = decodeURIComponent(value[1]);
+      language = decodeURIComponent(value[1]);
     }
   }
   var search = "search";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("search=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       search = decodeURIComponent(value[1]);
+      search = decodeURIComponent(value[1]);
     }
   }
-  queryparams = "wbsearchentities&search="+search+"&language="+
-                language + "&props=url&limit=10&origin=*&format=json";
+  queryparams = "wbsearchentities&search=" + search + "&language=" +
+    language + "&props=url&limit=10&origin=*&format=json";
   queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
 
 function getLinksAndCompare() {
   var compare = "Q1339, Q254";
-  if(window.location.search.length > 0) {
+  if (window.location.search.length > 0) {
     var reg = new RegExp("compare=([^&#=]*)");
     var value = reg.exec(window.location.search);
     if (value != null) {
-       compare = decodeURIComponent(unescape(value[1]));
-       compare = compare.replace("+", "");
+      compare = decodeURIComponent(unescape(value[1]));
+      compare = compare.replace("+", "");
     }
   }
   console.log(compare);
@@ -522,22 +522,22 @@ function getLinks() {
   getWikiLinks("wikiquote");
   getWikiLinks("wikispecies");
 }
-document.onkeydown = function(event) {
+document.onkeydown = function (event) {
   event = event || window.event;
   console.log(event.target.id);
   if (event.keyCode == '13') {
     var search = document.getElementById("headersearchtext").value;
-    if(window.location.toString().includes("compare.html")) {
-      getLinksAndCompare(event); 
+    if (window.location.toString().includes("compare.html")) {
+      getLinksAndCompare(event);
     }
     else {
-      if(event.target.id=== "searchtext") {
+      if (event.target.id === "searchtext") {
         getItem(event);
       }
       else {
-        window.location="./search.html?search="+ search;
-        findItem(event); 
+        window.location = "./search.html?search=" + search;
+        findItem(event);
       }
     }
-  } 
+  }
 }
