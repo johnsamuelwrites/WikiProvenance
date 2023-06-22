@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <head>
-   <meta charset="utf-8"/>
-   <title>About WikiProvenance</title>
-   <link rel="stylesheet" type="text/css" href="style.css"/>
-   <script type="text/javascript" src="wikiprovenance.js"> </script>
-  </head>
-  <body vocab="http://schema.org/" typeof="Website"> 
+
+<head>
+  <meta charset="utf-8" />
+  <title>About WikiProvenance</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <script type="text/javascript" src="wikiprovenance.js"> </script>
+</head>
+
+<body vocab="http://schema.org/" typeof="Website">
   <div id="header">
     <div id="logo"><a href="./index.html">WikiProvenance</a></div>
     <div id="headersearch">
       <form action="./search.html" method="get">
-        <input id="headersearchtext" type="text" name="search"  placeholder="Johann Sebastian Bach"/>
+        <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach" />
         <button id="headersearchbutton" type="submit" value="Search">Search</button>
       </form>
     </div>
   </div>
   <div id="sidebar">
-   <div id="sidebarlinks">
-     <ul>
-      <li><a href="./provenance.html">Provenance</a></li>
-      <li><a href="./search.html">Search</a></li>
-      <li><a href="./compare.html">Compare</a></li>
-      <li><a href="./wikiprovenance.html">About</a> </li>
-     </ul>
+    <div id="sidebarlinks">
+      <ul>
+        <li><a href="./provenance.html">Provenance</a></li>
+        <li><a href="./search.html">Search</a></li>
+        <li><a href="./compare.html">Compare</a></li>
+        <li><a href="./wikiprovenance.html">About</a> </li>
+      </ul>
     </div>
   </div>
   <div id="content">
@@ -34,53 +36,60 @@
       <h3>Features</h3>
       <p>WikiProvenance provides the following features:</p>
       <ul>
-       <li>Statistics on statements with references</li>
-       <li>Comparision of Statistics of different Wikidata items</li>
-       <li>Number of External identifiers</li>
-       <li>Number of multilingual articles on Wikipedia, Wikinews, Wikibooks, Wikisource, Wiktionary, Wikiquote, Wikivoyage, Wikiversity, Wikispecies</li>
-       <li>Bookmarkable links</li>
+        <li>Statistics on statements with references</li>
+        <li>Comparision of Statistics of different Wikidata items</li>
+        <li>Number of External identifiers</li>
+        <li>Number of multilingual articles on Wikipedia, Wikinews, Wikibooks, Wikisource, Wiktionary, Wikiquote,
+          Wikivoyage, Wikiversity, Wikispecies</li>
+        <li>Bookmarkable links</li>
       </ul>
     </div>
     <div class="section">
-     <h3>Technologies</h3>
-     <p>WikiProvenance can be tested on any modern browser. 
-       It makes use of the basic web technologies in a manner that anybody can download the set of HTML files and test them in a desktop or a mobile environment.
-       It can also be integrated to any server supporting HTML pages.
-       Following are the web technologies used:
-     </p>
-     <ul>
-      <li>HTML, Javascript, CSS, JSON</li>
-      <li>SPARQL queries</li>
-     </ul>
-    </div>
-    <div class="section">
-     <h3>Source code</h3>
-     <ul>
-       <li><a href="https://github.com/johnsamuelwrites/WikiProvenance">WikiProvenance on Github</a></li>
-     </ul>
-    </div>
-    <div class="section">
-     <h3>Team</h3>
-     <ul>
-      <li>John Samuel</li>
-     </ul>
-    </div>
-    <div class="section">
-     <h3>Posters and Demonstrations</h3>
+      <h3>Technologies</h3>
+      <p>WikiProvenance can be tested on any modern browser.
+        It makes use of the basic web technologies in a manner that anybody can download the set of HTML files and test
+        them in a desktop or a mobile environment.
+        It can also be integrated to any server supporting HTML pages.
+        Following are the web technologies used:
+      </p>
       <ul>
-         <li><b>WikiProvenance: Are there enough references to every (known) fact on Wikidata?</b>, Workshop on Open Citations, Bologna, Italy, September 3-5, 2018 (<a href="https://workshop-oc.github.io/">Link</a>, <a href="https://doi.org/10.5281/zenodo.1404852">PDF</a>)</li>
-        <li><b>WikiProvenance</b>, Hackathon showcase, Wikimedia Hackathon 2018, Barcelona, 20<sup>th</sup> May 2018 (<a href="https://www.mediawiki.org/wiki/Wikimedia_Hackathon_2018/Program#Sunday_20_May_2018">Link</a>)</li>
+        <li>HTML, Javascript, CSS, JSON</li>
+        <li>SPARQL queries</li>
       </ul>
     </div>
     <div class="section">
-     <h3>Acknowledgements</h3>
+      <h3>Source code</h3>
       <ul>
-       <li>Feedback during Wikimedia Hackathon 2018 (esp. Wikicite team)</li>
+        <li><a href="https://github.com/johnsamuelwrites/WikiProvenance">WikiProvenance on Github</a></li>
       </ul>
     </div>
-   </div>
-  <div id="footer">
-    <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a href="https://mediawiki.org/">MediaWiki</a> API</p>
+    <div class="section">
+      <h3>Team</h3>
+      <ul>
+        <li>John Samuel</li>
+      </ul>
+    </div>
+    <div class="section">
+      <h3>Posters and Demonstrations</h3>
+      <ul>
+        <li><b>WikiProvenance: Are there enough references to every (known) fact on Wikidata?</b>, Workshop on Open
+          Citations, Bologna, Italy, September 3-5, 2018 (<a href="https://workshop-oc.github.io/">Link</a>, <a
+            href="https://doi.org/10.5281/zenodo.1404852">PDF</a>)</li>
+        <li><b>WikiProvenance</b>, Hackathon showcase, Wikimedia Hackathon 2018, Barcelona, 20<sup>th</sup> May 2018 (<a
+            href="https://www.mediawiki.org/wiki/Wikimedia_Hackathon_2018/Program#Sunday_20_May_2018">Link</a>)</li>
+      </ul>
+    </div>
+    <div class="section">
+      <h3>Acknowledgements</h3>
+      <ul>
+        <li>Feedback during Wikimedia Hackathon 2018 (esp. Wikicite team)</li>
+      </ul>
+    </div>
   </div>
-  </body>
+  <div id="footer">
+    <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
+        href="https://mediawiki.org/">MediaWiki</a> API</p>
+  </div>
+</body>
+
 </html>

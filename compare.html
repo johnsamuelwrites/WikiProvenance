@@ -1,137 +1,142 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="utf-8" />
   <title>WikiProvenance</title>
-  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link rel="stylesheet" type="text/css" href="style.css" />
   <script type="text/javascript" src="wikiprovenance.js"> </script>
 </head>
+
 <body onload="getLinksAndCompare()">
   <div id="header">
     <div id="logo"><a href="./index.html">WikiProvenance</a></div>
     <div id="headersearch">
       <form action="./search.html" method="get">
-        <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach"/>
+        <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach" />
         <button id="headersearchbutton" type="submit" value="Search">Search</button>
       </form>
     </div>
   </div>
   <div id="sidebar">
-   <div id="sidebarlinks">
-     <ul>
-      <li><a href="#statisticssection">Overall Statistics</a></li>
-      <li><a href="#referencessection">References</a></li>
-      <li><a href="#externalidentifierssection">External identifiers</a></li>
-      <li><a href="#commons.wikimedialinkssection">Commons</a></li>
-      <li><a href="#wikipedialinkssection">Wikipedia</a></li>
-      <li><a href="#wikinewslinkssection">Wikinews</a></li>
-      <li><a href="#wikibookslinkssection">Wikibooks</a></li>
-      <li><a href="#wikisourcelinkssection">Wikisource</a></li>
-      <li><a href="#wiktionarylinkssection">Wiktionary</a></li>
-      <li><a href="#wikiquotelinkssection">Wikiquote</a></li>
-      <li><a href="#wikivoyagelinkssection">Wikivoyage</a></li>
-      <li><a href="#wikiversitylinkssection">Wikiversity</a></li>
-      <li><a href="#wikispecieslinkssection">Wikispecies</a> </li>
-      <li><a href="./wikiprovenance.html">About</a> </li>
+    <div id="sidebarlinks">
+      <ul>
+        <li><a href="#statisticssection">Overall Statistics</a></li>
+        <li><a href="#referencessection">References</a></li>
+        <li><a href="#externalidentifierssection">External identifiers</a></li>
+        <li><a href="#commons.wikimedialinkssection">Commons</a></li>
+        <li><a href="#wikipedialinkssection">Wikipedia</a></li>
+        <li><a href="#wikinewslinkssection">Wikinews</a></li>
+        <li><a href="#wikibookslinkssection">Wikibooks</a></li>
+        <li><a href="#wikisourcelinkssection">Wikisource</a></li>
+        <li><a href="#wiktionarylinkssection">Wiktionary</a></li>
+        <li><a href="#wikiquotelinkssection">Wikiquote</a></li>
+        <li><a href="#wikivoyagelinkssection">Wikivoyage</a></li>
+        <li><a href="#wikiversitylinkssection">Wikiversity</a></li>
+        <li><a href="#wikispecieslinkssection">Wikispecies</a> </li>
+        <li><a href="./wikiprovenance.html">About</a> </li>
     </div>
   </div>
   <div id="content">
     <div class="section">
       <h2>Compare</h2>
       <form action="./compare.html" onsubmit="getLinksAndCompare(event, this)">
-        <input id="compare" name="compare" type="text" placeholder="Q1339, Q254" ></input>
+        <input id="compare" name="compare" type="text" placeholder="Q1339, Q254"></input>
         <input type="submit">
       </form>
     </div>
     <div class="section" id="statisticssection">
-     <h2>Comparison of statistics on sources describing <div id="itemLabel"></div></h2>
-     <a class="statisticslink" href="#externalidentifierssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="externalidentifiersvalue">0</div>
-        <div>external identifiers</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikipedialinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikipedialinksvalue">0</div>
-        <div>articles on Wikipedia</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikinewslinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikinewslinksvalue">0</div>
-        <div>articles on Wikinews</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikibookslinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikibookslinksvalue">0</div>
-        <div>articles on Wikibooks</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikisourcelinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikisourcelinksvalue">0</div>
-        <div>articles on Wikisource</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wiktionarylinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wiktionarylinksvalue">0</div>
-        <div>articles on Wiktionary</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikiquotelinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikiquotelinksvalue">0</div>
-        <div>articles on Wikiquote</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikivoyagelinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikivoyagelinksvalue">0</div>
-        <div>articles on Wikivoyage</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikiversitylinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikiversitylinksvalue">0</div>
-        <div>articles on Wikiversity</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#wikispecieslinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="wikispecieslinksvalue">0</div>
-        <div>articles on Wikispecies</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#statisticssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="referencesvalue">0</div>
-        <div>% statements with references on Wikidata</div>
-       </div>
-     </a>
-     <div class="separator"></div>
-     <a class="statisticslink" href="#commons.wikimedialinkssection">
-       <div class="comparisonstatistics">
-        <div class="statisticsvalue" id="commons.wikimedialinksvalue">0</div>
-        <div>categories on Commons</div>
-       </div>
-     </a>
+      <h2>Comparison of statistics on sources describing <div id="itemLabel"></div>
+      </h2>
+      <a class="statisticslink" href="#externalidentifierssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="externalidentifiersvalue">0</div>
+          <div>external identifiers</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikipedialinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikipedialinksvalue">0</div>
+          <div>articles on Wikipedia</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikinewslinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikinewslinksvalue">0</div>
+          <div>articles on Wikinews</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikibookslinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikibookslinksvalue">0</div>
+          <div>articles on Wikibooks</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikisourcelinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikisourcelinksvalue">0</div>
+          <div>articles on Wikisource</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wiktionarylinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wiktionarylinksvalue">0</div>
+          <div>articles on Wiktionary</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikiquotelinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikiquotelinksvalue">0</div>
+          <div>articles on Wikiquote</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikivoyagelinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikivoyagelinksvalue">0</div>
+          <div>articles on Wikivoyage</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikiversitylinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikiversitylinksvalue">0</div>
+          <div>articles on Wikiversity</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#wikispecieslinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="wikispecieslinksvalue">0</div>
+          <div>articles on Wikispecies</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#statisticssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="referencesvalue">0</div>
+          <div>% statements with references on Wikidata</div>
+        </div>
+      </a>
+      <div class="separator"></div>
+      <a class="statisticslink" href="#commons.wikimedialinkssection">
+        <div class="comparisonstatistics">
+          <div class="statisticsvalue" id="commons.wikimedialinksvalue">0</div>
+          <div>categories on Commons</div>
+        </div>
+      </a>
     </div>
   </div>
   <div id="footer">
-    <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a href="https://mediawiki.org/">MediaWiki</a> API</p>
+    <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
+        href="https://mediawiki.org/">MediaWiki</a> API</p>
   </div>
- </body>
+</body>
+
 </html>
