@@ -114,244 +114,215 @@ function queryMediaWiki(queryparams, func, divId) {
   fetchData(queryUrl, {}, divId, func);
 }
 
-
-
 function createDivWikiStatisticsLinks(divId, json) {
   const { head: { vars }, results } = json;
-  const languages = document.getElementById(divId);
   const count = {};
 
-  for (const project of projects) {
-    count[project] = 0;
-  }
-
-  for (const result of results.bindings) {
-    for (const variable of vars) {
-      for (const project of projects) {
-        if (result[variable].value.includes(project)) {
-          count[project]++;
-        }
+  results.bindings.forEach(result => {
+    vars.forEach(variable => {
+      const project = getProjectFromValue(result[variable].value);
+      if (project) {
+        count[project] = (count[project] || 0) + 1;
       }
-    }
-  }
+    });
+  });
 
-  for (const project of projects) {
+  for (const project in count) {
     const valuediv = document.getElementById(project + "linksvalue");
     const valuespin = document.createElement("div");
-    valuespin.innerHTML = " " + count[project] + " ";
-    
-    if (valuediv.childElementCount === 0) {
-      valuediv.innerHTML = "";
-    }
-    
+    valuespin.innerHTML = ` ${count[project]} `;
+    valuediv.innerHTML = "";
     valuediv.appendChild(valuespin);
   }
 }
 
 function createDivWikipediaLanguageLinks(divId, json) {
   const { head: { vars }, results } = json;
-  var languages = document.getElementById(divId);
-  var total = document.createElement("h3");
-  if (divId.includes("commons")) {
-    total.innerHTML = "Total " + results.bindings.length + " category";
-  }
-  else {
-    total.innerHTML = "Total " + results.bindings.length + " languages";
-  }
-  var valuediv = document.getElementById(divId + "value");
+  const languages = document.getElementById(divId);
+  const total = document.createElement("h3");
+  total.innerHTML = `Total ${results.bindings.length} ${divId.includes("commons") ? "category" : "languages"}`;
+  const valuediv = document.getElementById(divId + "value");
   valuediv.innerHTML = results.bindings.length;
   languages.appendChild(total);
 
-  var table = document.createElement("table");
-  var th = document.createElement("tr");
-  var td = document.createElement("th");
-  td.innerHTML = "Language";
-  th.appendChild(td);
-  td = document.createElement("th");
-  td.innerHTML = "Link";
-  th.appendChild(td);
-  table.append(th);
-  for (const result of results.bindings) {
-    for (const variable of vars) {
-      tr = document.createElement("tr");
+  const table = createTable(["Language", "Link"]);
+  results.bindings.forEach(result => {
+    vars.forEach(variable => {
+      const tr = document.createElement("tr");
 
-      td = document.createElement("td");
-      td.setAttribute('class', "property");
-      var language = document.createElement("div");
-      language.setAttribute('class', "language");
-      languageText = result[variable].value;
-      link = result[variable].value;
-      languageText = languageText.replace("https://", "");
-      languageText = languageText.replace(/\..*/, "");
-      var text = document.createTextNode(languageText);
-      language.appendChild(text);
-      td.append(language);
-      tr.appendChild(td)
+      const languageText = getLanguageWithoutProtocol(result[variable].value);
+      const languageTd = createTableCell("property", "div", languageText);
+      tr.appendChild(languageTd);
 
-      td = document.createElement("td");
-      var a = document.createElement("a");
-      //a.setAttribute('href', link);
-      a.setAttribute('href', "./references.html?url="
-        + link);
-      var text = document.createTextNode(decodeURI(link));
-      a.append(text);
-      td.appendChild(a);
+      const link = "./references.html?url=" + result[variable].value;
+      const linkText = decodeURI(result[variable].value);
+      const linkTd = createTableCell(null, "a", linkText, { href: link });
+      tr.appendChild(linkTd);
 
-      tr.appendChild(td)
       table.appendChild(tr);
-    }
-  }
+    });
+  });
+
   languages.appendChild(table);
 }
 
 function createDivExternalLinksCount(divId, json) {
-  const { head: { vars }, results } = json;
-  var valuediv = document.getElementById("externalidentifiersvalue");
-  var valuespin = document.createElement("div");
-  valuespin.innerHTML = " " + results.bindings.length + " ";
-  if (valuediv.childElementCount == 0) {
-    valuediv.innerHTML = "";
-  }
+  const { results } = json;
+  const valuediv = document.getElementById("externalidentifiersvalue");
+  const valuespin = document.createElement("div");
+  valuespin.innerHTML = ` ${results.bindings.length} `;
+  valuediv.innerHTML = "";
   valuediv.appendChild(valuespin);
 }
 
 function createDivExternalLinks(divId, json) {
   const { head: { vars }, results } = json;
-  var references = document.getElementById(divId);
-  refs = {};
-  var statementTotal = document.createElement("h3");
-  statementTotal.innerHTML = "Total " + results.bindings.length + " external identifiers";
-  var valuediv = document.getElementById("externalidentifiersvalue");
+  const references = document.getElementById(divId);
+  const statementTotal = createHeader(`Total ${results.bindings.length} external identifiers`);
+  const valuediv = document.getElementById("externalidentifiersvalue");
   valuediv.innerHTML = results.bindings.length;
   references.appendChild(statementTotal);
-  var table = document.createElement("table");
-  var th = document.createElement("tr");
-  var td = document.createElement("th");
-  td.innerHTML = "External identifier";
-  th.appendChild(td);
-  td = document.createElement("th");
-  td.innerHTML = "Value";
-  th.appendChild(td);
-  table.append(th);
-  for (const result of results.bindings) {
-    tr = document.createElement("tr");
 
-    td = document.createElement("td");
-    td.setAttribute('class', "property");
-    var a = document.createElement("a");
-    a.setAttribute('href', result["property"].value);
-    var text = document.createTextNode(result["property"].value.replace("http://www.wikidata.org/entity/", ""));
-    a.append(text);
-    td.appendChild(a);
-    tr.appendChild(td);
+  const table = createTable(["External identifier", "Value"]);
+  results.bindings.forEach(result => {
+    const tr = document.createElement("tr");
 
-    td = document.createElement("td");
-    text = null;
-    text = document.createTextNode(result["value"].value);
-    td.appendChild(text);
-    tr.appendChild(td);
+    const property = getValueWithoutProtocol(result["property"].value);
+    const propertyTd = createTableCell("property", "a", property, { href: result["property"].value });
+    tr.appendChild(propertyTd);
+
+    const valueTd = createTableCell(null, "text", result["value"].value);
+    tr.appendChild(valueTd);
+
     table.appendChild(tr);
-  }
+  });
+
   references.appendChild(table);
 }
 
 function createDivReferencesCount(divId, json) {
-  const { head: { vars }, results } = json;
-  refs = {};
-  for (const result of results.bindings) {
-    if (result["reference"] != undefined) {
-      if (result['prop'].value in refs) {
-        refs[result['prop'].value] += 1;
-      }
-      else {
-        refs[result['prop'].value] = 1;
-      }
+  const { results } = json;
+  const refs = {};
+
+  results.bindings.forEach(result => {
+    if (result["reference"] !== undefined) {
+      const propValue = result['prop'].value;
+      refs[propValue] = (refs[propValue] || 0) + 1;
     }
-  }
-  if (results.bindings.length != 0) {
-    percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
-    var valuediv = document.getElementById("referencesvalue");
-    var valuespin = document.createElement("div");
-    valuespin.innerHTML = " " + percentage + " ";
-    if (valuediv.childElementCount == 0) {
-      valuediv.innerHTML = "";
-    }
-    valuediv.appendChild(valuespin);
+  });
+
+  if (results.bindings.length !== 0) {
+    const percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
+    const valuediv = document.getElementById("referencesvalue");
+    valuediv.innerHTML = "";
+    valuediv.appendChild(createSpanValue(percentage));
   }
 }
 
 function createDivReferences(divId, json) {
   const { head: { vars }, results } = json;
-  var references = document.getElementById(divId);
-  refs = {};
-  for (const result of results.bindings) {
-    if (result["reference"] != undefined) {
-      if (result['prop'].value in refs) {
-        refs[result['prop'].value] += 1;
-      }
-      else {
-        refs[result['prop'].value] = 1;
-      }
-    }
+  const references = document.getElementById(divId);
+  const refs = {};
+  results.bindings.forEach(result => {
+  if (result.reference !== undefined) {
+    const propValue = result.prop.value;
+    refs[propValue] = (refs[propValue] || 0) + 1;
   }
-  var statementTotal = document.createElement("h3");
-  statementTotal.innerHTML = "Total " + Object.keys(refs).length + " reference statements" +
-    " for a total of " + results.bindings.length + " statements";
-  if (results.bindings.length != 0) {
-    percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
-    statementTotal.innerHTML = statementTotal.innerHTML +
-      " (" + percentage + "%)"
-    var valuediv = document.getElementById("referencesvalue");
-    valuediv.innerHTML = percentage;
-  }
+  });
+
+  const total = `Total ${Object.keys(refs).length} reference statements for a total of ${results.bindings.length} statements`;
+  const percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
+  const statementTotal = createHeader(`${total} (${percentage}%)`);
+  const valuediv = document.getElementById("referencesvalue");
+  valuediv.innerHTML = percentage;
   references.appendChild(statementTotal);
 
-  var table = document.createElement("table");
-  var th = document.createElement("tr");
-  var td = document.createElement("th");
-  td.innerHTML = "Property";
-  th.appendChild(td);
-  td = document.createElement("th");
-  td.innerHTML = "Number of statements";
-  th.appendChild(td);
-  table.append(th);
-  data = Object.keys(refs);
-  for (i = 0; i < data.length; i++) {
-    tr = document.createElement("tr");
+  const table = createTable(["Property", "Number of statements"]);
+  Object.keys(refs).forEach(prop => {
+    const tr = document.createElement("tr");
 
-    td = document.createElement("td");
-    td.setAttribute('class', "property");
-    var a = document.createElement("a");
-    a.setAttribute('href', data[i]);
-    var text = document.createTextNode(data[i].replace("http://www.wikidata.org/prop/", ""));
-    a.append(text);
-    td.appendChild(a);
-    tr.appendChild(td);
+    const property = getValueWithoutProtocol(prop);
+    const propertyTd = createTableCell("property", "a", property, { href: prop });
+    tr.appendChild(propertyTd);
 
-    td = document.createElement("td");
-    text = null;
-    text = document.createTextNode(refs[data[i]]);
-    td.appendChild(text);
-    tr.appendChild(td);
+    const valueTd = createTableCell(null, "text", refs[prop]);
+    tr.appendChild(valueTd);
+
     table.appendChild(tr);
+  });
 
-  }
   references.appendChild(table);
+}
+
+
+function createHeader(text) {
+  const header = document.createElement("h3");
+  header.innerHTML = text;
+  return header;
+}
+
+function createTable(headers) {
+  const table = document.createElement("table");
+  const tr = document.createElement("tr");
+  headers.forEach(header => {
+    const th = document.createElement("th");
+    th.innerHTML = header;
+    tr.appendChild(th);
+  });
+  table.appendChild(tr);
+  return table;
+}
+
+function createTableCell(className, element, text, attributes) {
+  const td = document.createElement("td");
+  if (className) {
+    td.setAttribute("class", className);
+  }
+  const cellElement = document.createElement(element);
+  cellElement.innerHTML = text;
+  if (attributes) {
+    for (const key in attributes) {
+      cellElement.setAttribute(key, attributes[key]);
+    }
+  }
+  td.appendChild(cellElement);
+  return td;
+}
+
+function createAnchor(href, text) {
+  const a = document.createElement("a");
+  a.setAttribute("href", href);
+  a.innerHTML = text;
+  return a;
+}
+
+function getValueWithoutProtocol(value) {
+  return value.replace(/.*\//, "");
+}
+
+function getLanguageWithoutProtocol(languageText) {
+      languageText = languageText.replace("https://", "");
+      return languageText.replace(/\..*/, "");
+      
+}
+
+function createSpanValue(value) {
+  const valuespin = document.createElement("div");
+  valuespin.innerHTML = ` ${value} `;
+  return valuespin;
 }
 
 function createSpanLabel(divId, json) {
   const { head: { vars }, results } = json;
-  var label = document.getElementById("itemLabel");
-  for (const result of results.bindings) {
-    for (const variable of vars) {
-      var valuespin = document.createElement("span");
-      valuespin.innerHTML = " * " + result[variable].value + " * ";
-      if (label.childElementCount == 0) {
-        label.innerHTML = "";
-      }
+  const label = document.getElementById("itemLabel");
+
+  results.bindings.forEach(result => {
+    vars.forEach(variable => {
+      const valuespin = createSpanValue(result[variable].value);
+      label.innerHTML = "";
       label.appendChild(valuespin);
-    }
-  }
+    });
+  });
 }
 
 function createDivSearchResults(divId, json) {
