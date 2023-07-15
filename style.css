@@ -14,9 +14,7 @@ body {
   top: 7vh;
   height: 12vh;
   border-right: 1px solid grey;
-  display: inline;
   float: left;
-  padding: 0;
 }
 
 .statistics {
@@ -27,7 +25,6 @@ body {
 }
 
 .statisticsvalue {
-  position: relative;
   width: 8vw;
   height: 8vw;
   border-radius: 50%;
@@ -59,31 +56,16 @@ body {
   font-size: 1vw;
 }
 
-.separator {
-  position: relative;
-  top: 7vh;
-  height: 12vh;
-  border-right: 1px solid grey;
-  display: inline;
-  float: left;
-  padding: 0;
-}
-
 .comparisonstatistics {
-  position: relative;
   text-align: center;
   width: 10vw;
   float: left;
   background-color: #64afff;
   color: #000000;
-  margin-right: 2vw;
-  margin-left: 2vw;
-  margin-top: 1vw;
-  margin-bottom: 3vw;
+  margin: 1vw 2vw 3vw;
   padding: 0;
   display: inline;
-  border-right: 1px solid grey;
-  border-left: 1px solid grey;
+  border: 1px solid grey;
 }
 
 #sidebar {
@@ -119,7 +101,7 @@ body {
   color: #FFFFFF;
 }
 
-tr>th {
+tr > th {
   background-color: #0077c2;
   font-size: 2vh;
   line-height: 2vh;
@@ -129,7 +111,7 @@ tr>th {
   padding: 0.5vmax;
 }
 
-tr>td {
+tr > td {
   font-size: 2vh;
   line-height: 2vh;
   text-align: left;
@@ -177,8 +159,8 @@ tr>td {
   height: 8vh;
 }
 
-#logo>a:link,
-#logo>a:visited {
+#logo > a:link,
+#logo > a:visited {
   top: 5vh;
   color: #ffffff;
   text-decoration: none;
@@ -198,8 +180,8 @@ tr>td {
   margin-right: 15vw;
 }
 
-h1>a:link,
-h1>a:visited {
+h1 > a:link,
+h1 > a:visited {
   top: 3vh;
   color: #ffffff;
 }
@@ -226,7 +208,7 @@ ul {
   line-height: 4vh;
 }
 
-h1>a {
+h1 > a {
   text-decoration: none;
 }
 
@@ -261,15 +243,9 @@ a:visited {
   line-height: 3vh;
 }
 
-.property>a,
-.language>a,
-.datatype>a {
-  color: white;
-}
-
-.property>a:visited,
-.language>a:visited,
-.datatype>a:visited {
+.property > a,
+.language > a,
+.datatype > a {
   color: white;
 }
 
@@ -279,7 +255,6 @@ img {
 }
 
 @media screen and (min-width: 480px) {
-
   .property,
   .language,
   .datatype {
@@ -304,8 +279,7 @@ img {
   }
 }
 
-@media screen and (max-width: 480px) and (orientation : portrait) {
-
+@media screen and (max-width: 480px) and (orientation: portrait) {
   .property,
   .language,
   .datatype {
@@ -317,14 +291,13 @@ img {
     overflow: unset;
   }
 
-
   .comparisonstatistics {
     width: 20vw;
     font-size: 1.8vh;
   }
 
   #logo {
-    font-size: 3.0vh;
+    font-size: 3vh;
   }
 
   #header {
@@ -354,12 +327,12 @@ img {
   }
 }
 
-@media screen and (max-width: 640px) and (orientation : landscape) {
+@media screen and (max-width: 640px) and (orientation: landscape) {
   #sidebarlinks {
     font-size: 2vw;
   }
 
-  #sidebarlinks>ul {
+  #sidebarlinks > ul {
     padding: 1vw;
   }
 
@@ -377,10 +350,9 @@ img {
     height: 9vh;
     font-size: 2.5vh;
   }
-
 }
 
-@media screen and (min-width: 480px) and (orientation : portrait) {
+@media screen and (min-width: 480px) and (orientation: portrait) {
   #sidebar {
     width: 20vw;
   }
