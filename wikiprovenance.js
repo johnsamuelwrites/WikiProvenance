@@ -2,6 +2,19 @@
  * Author: John Samuel
  */
 
+const projects = [
+  "wikipedia",
+  "commons.wikimedia",
+  "wikivoyage",
+  "wikinews",
+  "wikisource",
+  "wiktionary",
+  "wikiversity",
+  "wikibooks",
+  "wikiquote",
+  "wikispecies"
+];
+
 function queryWikidata(sparqlQuery, func, divId) {
   /*
    * Following script is a modified form of automated
@@ -24,33 +37,34 @@ function queryWikidata(sparqlQuery, func, divId) {
 
 function createDivWikiStatisticsLinks(divId, json) {
   const { head: { vars }, results } = json;
-  var languages = document.getElementById(divId);
-  var projects = ["wikipedia", "commons.wikimedia", "wikivoyage", "wikinews",
-    "wikisource", "wiktionary", "wikiversity", "wikibooks", "wikiquote",
-    "wikispecies"];
-  var count = {};
-  for (var i in projects) {
-    count[projects[i]] = 0;
+  const languages = document.getElementById(divId);
+  const count = {};
+
+  for (const project of projects) {
+    count[project] = 0;
   }
+
   for (const result of results.bindings) {
     for (const variable of vars) {
-      for (var i in projects) {
-        if (result[variable].value.includes(projects[i])) {
-          count[projects[i]] = count[projects[i]] + 1;
+      for (const project of projects) {
+        if (result[variable].value.includes(project)) {
+          count[project]++;
         }
       }
     }
   }
-  for (var i in projects) {
-    var valuediv = document.getElementById(projects[i] + "linksvalue");
-    var valuespin = document.createElement("div");
-    valuespin.innerHTML = " " + count[projects[i]] + " ";
-    if (valuediv.childElementCount == 0) {
+
+  for (const project of projects) {
+    const valuediv = document.getElementById(project + "linksvalue");
+    const valuespin = document.createElement("div");
+    valuespin.innerHTML = " " + count[project] + " ";
+    
+    if (valuediv.childElementCount === 0) {
       valuediv.innerHTML = "";
     }
+    
     valuediv.appendChild(valuespin);
   }
-
 }
 
 function createDivWikipediaLanguageLinks(divId, json) {
@@ -245,6 +259,21 @@ function createDivReferences(divId, json) {
   references.appendChild(table);
 }
 
+function createSpanLabel(divId, json) {
+  const { head: { vars }, results } = json;
+  var label = document.getElementById("itemLabel");
+  for (const result of results.bindings) {
+    for (const variable of vars) {
+      var valuespin = document.createElement("span");
+      valuespin.innerHTML = " * " + result[variable].value + " * ";
+      if (label.childElementCount == 0) {
+        label.innerHTML = "";
+      }
+      label.appendChild(valuespin);
+    }
+  }
+}
+
 function getAllWikiLinks(item = "Q1339") {
   if (window.location.search.length > 0) {
     var reg = new RegExp("item=([^&#=]*)");
@@ -325,21 +354,6 @@ function getExternalLinksCount(item = "Q1339") {
 order by ?property
     `;
   queryWikidata(sparqlQuery, createDivExternalLinksCount, "statisticssection");
-}
-
-function createSpanLabel(divId, json) {
-  const { head: { vars }, results } = json;
-  var label = document.getElementById("itemLabel");
-  for (const result of results.bindings) {
-    for (const variable of vars) {
-      var valuespin = document.createElement("span");
-      valuespin.innerHTML = " * " + result[variable].value + " * ";
-      if (label.childElementCount == 0) {
-        label.innerHTML = "";
-      }
-      label.appendChild(valuespin);
-    }
-  }
 }
 
 function getLabel(item) {
@@ -511,16 +525,10 @@ function getLinksAndCompare() {
 function getLinks() {
   getExternalLinks();
   getReferences();
-  getWikiLinks("wikipedia");
-  getWikiLinks("commons.wikimedia");
-  getWikiLinks("wikivoyage");
-  getWikiLinks("wikinews");
-  getWikiLinks("wikisource");
-  getWikiLinks("wiktionary");
-  getWikiLinks("wikiversity");
-  getWikiLinks("wikibooks");
-  getWikiLinks("wikiquote");
-  getWikiLinks("wikispecies");
+
+  for (const project of projects) {
+    getWikiLinks(project);
+  }
 }
 
 document.getElementById("headersearchtext").addEventListener("keydown", function(event) {
