@@ -7,7 +7,7 @@ WikiProvenance provides the following features
 
 ## Demo
 * [WikiProvenance (on https://rawgit.com)](https://rawgit.com/johnsamuelwrites/WikiProvenance/master/index.html)
-* [WDProp](https://johnsamuel.info/WikiProvenance/index.html)
+* [WikiProvenance](https://johnsamuel.info/WikiProvenance/index.html)
 
 ## Author
 * John Samuel
