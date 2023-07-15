@@ -224,10 +224,10 @@ function createDivReferences(divId, json) {
   const references = document.getElementById(divId);
   const refs = {};
   results.bindings.forEach(result => {
-  if (result.reference !== undefined) {
-    const propValue = result.prop.value;
-    refs[propValue] = (refs[propValue] || 0) + 1;
-  }
+    if (result.reference !== undefined) {
+      const propValue = result.prop.value;
+      refs[propValue] = (refs[propValue] || 0) + 1;
+    }
   });
 
   const total = `Total ${Object.keys(refs).length} reference statements for a total of ${results.bindings.length} statements`;
@@ -301,9 +301,9 @@ function getValueWithoutProtocol(value) {
 }
 
 function getLanguageWithoutProtocol(languageText) {
-      languageText = languageText.replace("https://", "");
-      return languageText.replace(/\..*/, "");
-      
+  languageText = languageText.replace("https://", "");
+  return languageText.replace(/\..*/, "");
+
 }
 
 function createSpanValue(value) {
@@ -450,7 +450,7 @@ function findItem(e) {
 }
 
 
-document.getElementById("headersearchtext").addEventListener("keydown", function(event) {
+document.getElementById("headersearchtext").addEventListener("keydown", function (event) {
   event = event || window.event;
   console.log(event.target.id);
 

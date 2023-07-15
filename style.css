@@ -101,7 +101,7 @@ body {
   color: #FFFFFF;
 }
 
-tr > th {
+tr>th {
   background-color: #0077c2;
   font-size: 2vh;
   line-height: 2vh;
@@ -111,7 +111,7 @@ tr > th {
   padding: 0.5vmax;
 }
 
-tr > td {
+tr>td {
   font-size: 2vh;
   line-height: 2vh;
   text-align: left;
@@ -159,8 +159,8 @@ tr > td {
   height: 8vh;
 }
 
-#logo > a:link,
-#logo > a:visited {
+#logo>a:link,
+#logo>a:visited {
   top: 5vh;
   color: #ffffff;
   text-decoration: none;
@@ -180,8 +180,8 @@ tr > td {
   margin-right: 15vw;
 }
 
-h1 > a:link,
-h1 > a:visited {
+h1>a:link,
+h1>a:visited {
   top: 3vh;
   color: #ffffff;
 }
@@ -208,7 +208,7 @@ ul {
   line-height: 4vh;
 }
 
-h1 > a {
+h1>a {
   text-decoration: none;
 }
 
@@ -243,9 +243,9 @@ a:visited {
   line-height: 3vh;
 }
 
-.property > a,
-.language > a,
-.datatype > a {
+.property>a,
+.language>a,
+.datatype>a {
   color: white;
 }
 
@@ -255,6 +255,7 @@ img {
 }
 
 @media screen and (min-width: 480px) {
+
   .property,
   .language,
   .datatype {
@@ -280,6 +281,7 @@ img {
 }
 
 @media screen and (max-width: 480px) and (orientation: portrait) {
+
   .property,
   .language,
   .datatype {
@@ -332,7 +334,7 @@ img {
     font-size: 2vw;
   }
 
-  #sidebarlinks > ul {
+  #sidebarlinks>ul {
     padding: 1vw;
   }
 
@@ -384,4 +386,3 @@ img {
     margin-left: 20vw;
   }
 }
-
