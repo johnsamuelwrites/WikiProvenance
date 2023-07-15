@@ -522,22 +522,20 @@ function getLinks() {
   getWikiLinks("wikiquote");
   getWikiLinks("wikispecies");
 }
-document.onkeydown = function (event) {
+
+document.getElementById("headersearchtext").addEventListener("keydown", function(event) {
   event = event || window.event;
   console.log(event.target.id);
-  if (event.keyCode == '13') {
-    var search = document.getElementById("headersearchtext").value;
-    if (window.location.toString().includes("compare.html")) {
+
+  if (event.keyCode === 13) {
+    var search = this.value;
+
+    if (window.location.pathname.includes("compare.html")) {
       getLinksAndCompare(event);
-    }
-    else {
-      if (event.target.id === "searchtext") {
-        getItem(event);
-      }
-      else {
-        window.location = "./search.html?search=" + search;
-        findItem(event);
-      }
+    } else {
+      window.location.href = "./search.html?search=" + encodeURIComponent(search);
+      findItem(event);
     }
   }
-}
+});
+
