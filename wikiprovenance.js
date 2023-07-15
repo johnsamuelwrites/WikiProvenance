@@ -294,6 +294,59 @@ function createSpanLabel(divId, json) {
   }
 }
 
+function createDivSearchResults(divId, json) {
+  searchresults = document.getElementById("searchresults");
+  while (searchresults.hasChildNodes()) {
+    searchresults.removeChild(searchresults.lastChild);
+  }
+  if ("search" in json) {
+    for (result in json["search"]) {
+      var div = document.createElement("div");
+      var a = document.createElement("a");
+      a.setAttribute('href', "./provenance.html?item=" + json["search"][result]["id"]);
+      var text = document.createTextNode(json["search"][result]["label"]
+        + " (" + json["search"][result]["id"] + ")");
+      a.append(text);
+      div.append(a);
+      var span = document.createElement("span");
+      var spanText = document.createTextNode(": " + json["search"][result]["description"] + " ");
+      span.append(spanText);
+      div.append(span);
+
+      var more = document.createElement("a");
+      more.setAttribute('href', json["search"][result]["concepturi"]);
+      var moretext = document.createTextNode("(More...)");
+      more.append(moretext);
+      div.append(more);
+      searchresults.append(div);
+    }
+  }
+}
+
+function findItem(e) {
+  e.preventDefault();
+  var language = "en";
+  if (window.location.search.length > 0) {
+    var reg = new RegExp("language=([^&#=]*)");
+    var value = reg.exec(window.location.search);
+    if (value != null) {
+      language = decodeURIComponent(value[1]);
+    }
+  }
+  var search = "search";
+  if (window.location.search.length > 0) {
+    var reg = new RegExp("search=([^&#=]*)");
+    var value = reg.exec(window.location.search);
+    if (value != null) {
+      search = decodeURIComponent(value[1]);
+    }
+  }
+  queryparams = "wbsearchentities&search=" + search + "&language=" +
+    language + "&props=url&limit=10&origin=*&format=json";
+  queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
+}
+
+
 function getAllWikiLinks(item = "Q1339") {
   if (window.location.search.length > 0) {
     var reg = new RegExp("item=([^&#=]*)");
@@ -431,57 +484,6 @@ function getReferences(item = "Q1339") {
     ORDER by ?statement
     `;
   queryWikidata(sparqlQuery, createDivReferences, "references");
-}
-
-function createDivSearchResults(divId, json) {
-  searchresults = document.getElementById("searchresults");
-  while (searchresults.hasChildNodes()) {
-    searchresults.removeChild(searchresults.lastChild);
-  }
-  if ("search" in json) {
-    for (result in json["search"]) {
-      var div = document.createElement("div");
-      var a = document.createElement("a");
-      a.setAttribute('href', "./provenance.html?item=" + json["search"][result]["id"]);
-      var text = document.createTextNode(json["search"][result]["label"]
-        + " (" + json["search"][result]["id"] + ")");
-      a.append(text);
-      div.append(a);
-      var span = document.createElement("span");
-      var spanText = document.createTextNode(": " + json["search"][result]["description"] + " ");
-      span.append(spanText);
-      div.append(span);
-
-      var more = document.createElement("a");
-      more.setAttribute('href', json["search"][result]["concepturi"]);
-      var moretext = document.createTextNode("(More...)");
-      more.append(moretext);
-      div.append(more);
-      searchresults.append(div);
-    }
-  }
-}
-function findItem(e) {
-  e.preventDefault();
-  var language = "en";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("language=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      language = decodeURIComponent(value[1]);
-    }
-  }
-  var search = "search";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("search=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      search = decodeURIComponent(value[1]);
-    }
-  }
-  queryparams = "wbsearchentities&search=" + search + "&language=" +
-    language + "&props=url&limit=10&origin=*&format=json";
-  queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
 
 function getItem() {
