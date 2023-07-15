@@ -15,6 +15,67 @@ const projects = [
   "wikispecies"
 ];
 
+const sparqlQueries = {
+  allWikiLinks: {
+    query: `SELECT ?wikilink WHERE { ?wikilink schema:about wd:{{item}}. } ORDER BY ?wikilink`,
+    callback: createDivWikiStatisticsLinks,
+    elementId: "statisticssection"
+  },
+  wikiLinks: {
+    query: `SELECT ?wikilink WHERE { ?wikilink schema:about wd:{{item}}. FILTER REGEX(STR(?wikilink), "{{wikiproject}}.org/") . } ORDER BY ?wikilink`,
+    callback: createDivWikipediaLanguageLinks,
+    elementId: "{{wikiproject}}links"
+  },
+  externalLinks: {
+    query: `SELECT ?property ?value {
+      ?qualifier rdf:type owl:DatatypeProperty.
+      ?property rdf:type wikibase:Property;
+        wikibase:propertyType wikibase:ExternalId.
+      ?property wikibase:claim ?propertyclaim.
+      wd:{{item}} ?propertyclaim [?qualifier ?value].
+    } ORDER BY ?property`,
+    callback: createDivExternalLinks,
+    elementId: "externalidentifiers"
+  },
+  externalLinksCount: {
+    query: `SELECT ?property ?value {
+      ?qualifier rdf:type owl:DatatypeProperty.
+      ?property rdf:type wikibase:Property;
+        wikibase:propertyType wikibase:ExternalId.
+      ?property wikibase:claim ?propertyclaim.
+      wd:{{item}} ?propertyclaim [?qualifier ?value].
+    } ORDER BY ?property`,
+    callback: createDivExternalLinksCount,
+    elementId: "statisticssection"
+  },
+  label: {
+    query: `SELECT DISTINCT ?label WHERE {
+      wd:{{item}} rdfs:label ?label;
+      FILTER(lang(?label) = "{{lang}}").
+    }`,
+    callback: createSpanLabel,
+    elementId: "statisticssection"
+  },
+  referenceCount: {
+    query: `SELECT ?statement ?prop ?reference {
+      wd:{{item}} ?prop ?statement.
+      OPTIONAL { ?statement prov:wasDerivedFrom ?reference }
+      FILTER (REGEX(STR(?statement), "http://www.wikidata.org/entity/statement/"))
+    } ORDER BY ?statement`,
+    callback: createDivReferencesCount,
+    elementId: "statisticssection"
+  },
+  references: {
+    query: `SELECT ?statement ?prop ?reference {
+      wd:{{item}} ?prop ?statement.
+      OPTIONAL { ?statement prov:wasDerivedFrom ?reference }
+      FILTER (REGEX(STR(?statement), "http://www.wikidata.org/entity/statement/"))
+    } ORDER BY ?statement`,
+    callback: createDivReferences,
+    elementId: "references"
+  }
+};
+
 function fetchData(url, headers, divId, func) {
   var div = document.getElementById(divId);
   var fetchText = document.createElement("h4");
@@ -208,7 +269,6 @@ function createDivReferencesCount(divId, json) {
     }
   }
   if (results.bindings.length != 0) {
-    console.log("hello");
     percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
     var valuediv = document.getElementById("referencesvalue");
     var valuespin = document.createElement("div");
@@ -323,202 +383,80 @@ function createDivSearchResults(divId, json) {
   }
 }
 
-function findItem(e) {
-  e.preventDefault();
-  var language = "en";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("language=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      language = decodeURIComponent(value[1]);
-    }
-  }
-  var search = "search";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("search=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      search = decodeURIComponent(value[1]);
-    }
-  }
-  queryparams = "wbsearchentities&search=" + search + "&language=" +
-    language + "&props=url&limit=10&origin=*&format=json";
-  queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
-}
-
-
 function getAllWikiLinks(item = "Q1339") {
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("item=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      item = decodeURIComponent(value[1]);
-    }
-  }
-
-  const sparqlQuery = `
-    SELECT ?wikilink
-    WHERE 
-    {
-      ?wikilink schema:about wd:` + item + `.
-    }
-    order by ?wikilink
-    `;
-  queryWikidata(sparqlQuery, createDivWikiStatisticsLinks, "statisticssection");
+  processQuery("allWikiLinks", { item });
 }
+
+function executeQuery(sparqlQuery, callback, elementId) {
+  queryWikidata(sparqlQuery, callback, elementId);
+}
+
+function processQuery(queryName, params) {
+  const { query, callback, elementId } = sparqlQueries[queryName];
+  const processedQuery = query.replace(/{{(\w+)}}/g, (match, key) => params[key]);
+  const processedElementId = elementId.replace(/{{(\w+)}}/g, (match, key) => params[key]);
+  executeQuery(processedQuery, callback, processedElementId);
+}
+
 
 function getWikiLinks(wikiproject, item = "Q1339") {
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("item=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      item = decodeURIComponent(value[1]);
-    }
-  }
-
-  const sparqlQuery = `
-    SELECT ?wikilink
-    WHERE 
-    {
-      ?wikilink schema:about wd:` + item + `.
-      FILTER REGEX(STR(?wikilink), "` + wikiproject + `.org/") .
-    }
-    order by ?wikilink
-    `;
-  queryWikidata(sparqlQuery, createDivWikipediaLanguageLinks, wikiproject + "links");
-}
-
-function getExternalLinks() {
-  var item = "Q1339";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("item=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      item = decodeURIComponent(value[1]);
-    }
-  }
-
-  const sparqlQuery = `
-     SELECT ?property ?value 
-    {
-      ?qualifier rdf:type owl:DatatypeProperty.
-      ?property rdf:type wikibase:Property;
-         wikibase:propertyType wikibase:ExternalId.
-      ?property wikibase:claim ?propertyclaim.
-      wd:`+ item + ` ?propertyclaim [?qualifier ?value].
-     
-    }
-order by ?property
-    `;
-  queryWikidata(sparqlQuery, createDivExternalLinks, "externalidentifiers");
+  processQuery("wikiLinks", { item, wikiproject });
 }
 
 function getExternalLinksCount(item = "Q1339") {
-  const sparqlQuery = `
-     SELECT ?property ?value 
-    {
-      ?qualifier rdf:type owl:DatatypeProperty.
-      ?property rdf:type wikibase:Property;
-         wikibase:propertyType wikibase:ExternalId.
-      ?property wikibase:claim ?propertyclaim.
-      wd:`+ item + ` ?propertyclaim [?qualifier ?value].
-     
-    }
-order by ?property
-    `;
-  queryWikidata(sparqlQuery, createDivExternalLinksCount, "statisticssection");
+  processQuery("externalLinksCount", { item });
 }
 
-function getLabel(item) {
-  lang = "en";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("lang=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      lang = decodeURIComponent(value[1]);
-    }
-  }
-  const sparqlQuery = `
-      SELECT DISTINCT ?label
-      WHERE
-      {
-        wd:`+ item + ` rdfs:label ?label;
-        FILTER(lang(?label) = "`+ lang + `").
-      }
-      `;
-  queryWikidata(sparqlQuery, createSpanLabel, "statisticssection");
+function getLabel(item, lang = "en") {
+  processQuery("label", { item, lang });
 }
 
 function getReferenceCount(item = "Q1339") {
-  const sparqlQuery = `
-    SELECT ?statement ?prop ?reference
-    {
-      wd:` + item + ` ?prop ?statement.
-      OPTIONAL{?statement prov:wasDerivedFrom ?reference}
-      FILTER(REGEX(STR(?statement), "http://www.wikidata.org/entity/statement/"))
-    }
-    ORDER by ?statement
-    `;
-  queryWikidata(sparqlQuery, createDivReferencesCount, "statisticssection");
+  processQuery("referenceCount", { item });
+}
+
+function getExternalLinks(item = "Q1339") {
+  processQuery("externalLinks", { item });
 }
 
 function getReferences(item = "Q1339") {
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("item=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      item = decodeURIComponent(value[1]);
-    }
-  }
-  var div = document.getElementById("itemCode");
-  div.innerHTML = item;
-  getLabel(item);
-
-  const sparqlQuery = `
-    SELECT ?statement ?prop ?reference
-    {
-      wd:` + item + ` ?prop ?statement.
-      OPTIONAL{?statement prov:wasDerivedFrom ?reference}
-      FILTER(REGEX(STR(?statement), "http://www.wikidata.org/entity/statement/"))
-    }
-    ORDER by ?statement
-    `;
-  queryWikidata(sparqlQuery, createDivReferences, "references");
+  processQuery("references", { item });
 }
 
 function getItem() {
-  var language = "en";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("language=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      language = decodeURIComponent(value[1]);
-    }
-  }
-  var search = "search";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("search=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      search = decodeURIComponent(value[1]);
-    }
-  }
-  queryparams = "wbsearchentities&search=" + search + "&language=" +
-    language + "&props=url&limit=10&origin=*&format=json";
+  const language = getQueryParam("language") || "en";
+  const search = getQueryParam("search") || "search";
+
+  const queryparams = `wbsearchentities&search=${search}&language=${language}&props=url&limit=10&origin=*&format=json`;
   queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
 
-function getLinksAndCompare() {
-  var compare = "Q1339, Q254";
-  if (window.location.search.length > 0) {
-    var reg = new RegExp("compare=([^&#=]*)");
-    var value = reg.exec(window.location.search);
-    if (value != null) {
-      compare = decodeURIComponent(unescape(value[1]));
-      compare = compare.replace("+", "");
+function getQueryParam(name) {
+  if (window.location.search) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has(name)) {
+      return decodeURIComponent(urlParams.get(name));
     }
   }
-  console.log(compare);
+  return null;
+}
+
+
+function getLinks() {
+  const item = getQueryParam('item');
+  getLabel(item);
+  getExternalLinks(item);
+  getReferences(item);
+
+  for (const project of projects) {
+    getWikiLinks(project, item);
+  }
+}
+
+function getLinksAndCompare() {
+  var compare = getQueryParam("compare") || "Q1339, Q254";
+  compare = decodeURIComponent(compare).replace("+", "");
+
   items = compare.split(",");
   for (var i in items) {
     item = items[i];
@@ -530,14 +468,16 @@ function getLinksAndCompare() {
   }
 }
 
-function getLinks() {
-  getExternalLinks();
-  getReferences();
+function findItem(e) {
+  e.preventDefault();
 
-  for (const project of projects) {
-    getWikiLinks(project);
-  }
+  const language = getQueryParam("language") || "en";
+  const search = getQueryParam("search") || "search";
+  const queryparams = `wbsearchentities&search=${search}&language=${language}&props=url&limit=10&origin=*&format=json`;
+
+  queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
+
 
 document.getElementById("headersearchtext").addEventListener("keydown", function(event) {
   event = event || window.event;
