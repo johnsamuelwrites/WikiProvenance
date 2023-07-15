@@ -5,11 +5,10 @@
   <meta charset="utf-8" />
   <title>WikiProvenance</title>
   <link rel="stylesheet" type="text/css" href="style.css" />
-  <script type="text/javascript" src="wikiprovenance.js">
   </script>
 </head>
 
-<body onload="findItem(event)">
+<body>
   <div id="header">
     <div id="logo"><a href="./index.html">WikiProvenance</a></div>
     <div id="headersearch">
@@ -46,6 +45,12 @@
     <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
         href="https://mediawiki.org/">MediaWiki</a> API</p>
   </div>
+  <script type="text/javascript" src="wikiprovenance.js"></script>
+    <script>
+    window.addEventListener('load', function() {
+      findItem(event);
+    });
+  </script>
 </body>
 
 </html>
