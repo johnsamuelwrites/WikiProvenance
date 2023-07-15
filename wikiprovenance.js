@@ -15,25 +15,45 @@ const projects = [
   "wikispecies"
 ];
 
-function queryWikidata(sparqlQuery, func, divId) {
-  /*
-   * Following script is a modified form of automated
-   * script generated from Wikidata Query services
-   */
+function fetchData(url, headers, divId, func) {
   var div = document.getElementById(divId);
   var fetchText = document.createElement("h4");
   fetchText.innerHTML = "Fetching data...";
   div.append(fetchText);
 
-  const endpointUrl = 'https://query.wikidata.org/sparql',
-    fullUrl = endpointUrl + '?query=' + encodeURIComponent(sparqlQuery) + "&format=json";
-  headers = { 'Accept': 'application/sparql-results+json' };
-
-  fetch(fullUrl, { headers }).then(body => body.json()).then(json => {
-    div.removeChild(fetchText);
-    func(divId, json)
-  });
+  fetch(url, { headers })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error handling Request');
+      }
+      return response.json();
+    })
+    .then(data => {
+      div.removeChild(fetchText);
+      func(divId, data);
+    })
+    .catch(error => {
+      div.removeChild(fetchText);
+      console.error('Error:', error);
+    });
 }
+
+function queryWikidata(sparqlQuery, func, divId) {
+  const endpointUrl = 'https://query.wikidata.org/sparql';
+  const queryUrl = endpointUrl + '?query=' + encodeURIComponent(sparqlQuery) + '&format=json';
+  const headers = { 'Accept': 'application/sparql-results+json' };
+
+  fetchData(queryUrl, headers, divId, func);
+}
+
+function queryMediaWiki(queryparams, func, divId) {
+  const endpointUrl = 'https://www.wikidata.org/w/api.php';
+  const queryUrl = endpointUrl + '?action=' + queryparams + '&format=json';
+
+  fetchData(queryUrl, {}, divId, func);
+}
+
+
 
 function createDivWikiStatisticsLinks(divId, json) {
   const { head: { vars }, results } = json;
@@ -413,20 +433,6 @@ function getReferences(item = "Q1339") {
   queryWikidata(sparqlQuery, createDivReferences, "references");
 }
 
-function queryMediaWiki(queryparams, func, divId) {
-  var div = document.getElementById(divId);
-  var fetchText = document.createElement("h4");
-  fetchText.innerHTML = "Fetching data...";
-  div.append(fetchText);
-
-  const endpointUrl = 'https://www.wikidata.org/w/api.php',
-    fullUrl = endpointUrl + '?action=' + queryparams + "&format=json";
-
-  fetch(fullUrl, {}).then(body => body.json()).then(json => {
-    div.removeChild(fetchText);
-    func(divId, json)
-  });
-}
 function createDivSearchResults(divId, json) {
   searchresults = document.getElementById("searchresults");
   while (searchresults.hasChildNodes()) {
