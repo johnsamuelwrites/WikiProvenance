@@ -5,6 +5,10 @@ WikiProvenance provides the following features
 * Count and details of multilingual articles on Wikipedia, Wikinews, Wikibooks, Wikisource, Wiktionary, Wikiquote, Wikivoyage, Wikiversity, Wikispecies
 * Bookmarkable links
 
+## Demo
+* [WikiProvenance (on https://rawgit.com)](https://rawgit.com/johnsamuelwrites/WikiProvenance/master/index.html)
+* [WDProp](https://johnsamuel.info/WikiProvenance/index.html)
+
 ## Author
 * John Samuel
 
