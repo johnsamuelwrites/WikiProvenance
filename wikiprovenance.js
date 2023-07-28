@@ -1,7 +1,6 @@
 /*
  * Author: John Samuel
  */
-
 const projects = [
   "wikipedia",
   "commons.wikimedia",
@@ -76,12 +75,13 @@ const sparqlQueries = {
   }
 };
 
+
 function fetchData(url, headers, divId, func) {
-  var div = document.getElementById(divId);
-  var fetchText = document.createElement("h4");
+  const div = document.getElementById(divId);
+  const fetchText = document.createElement("h4");
   fetchText.innerHTML = "Fetching data...";
   div.append(fetchText);
-
+  
   fetch(url, { headers })
     .then(response => {
       if (!response.ok) {
@@ -94,7 +94,7 @@ function fetchData(url, headers, divId, func) {
       func(divId, data);
     })
     .catch(error => {
-      div.removeChild(fetchText);
+      removeNodeById(fetchText);
       console.error('Error:', error);
     });
 }
@@ -103,21 +103,19 @@ function queryWikidata(sparqlQuery, func, divId) {
   const endpointUrl = 'https://query.wikidata.org/sparql';
   const queryUrl = endpointUrl + '?query=' + encodeURIComponent(sparqlQuery) + '&format=json';
   const headers = { 'Accept': 'application/sparql-results+json' };
-
   fetchData(queryUrl, headers, divId, func);
 }
 
 function queryMediaWiki(queryparams, func, divId) {
   const endpointUrl = 'https://www.wikidata.org/w/api.php';
   const queryUrl = endpointUrl + '?action=' + queryparams + '&format=json';
-
   fetchData(queryUrl, {}, divId, func);
 }
 
 function createDivWikiStatisticsLinks(divId, json) {
   const { head: { vars }, results } = json;
   const count = {};
-
+  
   results.bindings.forEach(result => {
     vars.forEach(variable => {
       const project = getProjectFromValue(result[variable].value);
@@ -126,13 +124,36 @@ function createDivWikiStatisticsLinks(divId, json) {
       }
     });
   });
-
+  
   for (const project in count) {
     const valuediv = document.getElementById(project + "linksvalue");
     const valuespin = document.createElement("div");
     valuespin.innerHTML = ` ${count[project]} `;
     valuediv.innerHTML = "";
     valuediv.appendChild(valuespin);
+  }
+}
+
+function removeNodeById(id) {
+    const targetElement = document.getElementById(id);
+
+    if (targetElement) {
+        targetElement.parentNode.removeChild(targetElement);
+    }
+}
+
+
+function getLanguageWithoutProtocol(url) {
+  const languagePattern = /^https?:\/\/([a-z]{2,})\./;
+
+  // Search for the language code in the URL
+  const match = url.match(languagePattern);
+
+  if (match) {
+    const languageCode = match[1];
+    return languageCode;
+  } else {
+    return null;
   }
 }
 
@@ -144,26 +165,32 @@ function createDivWikipediaLanguageLinks(divId, json) {
   const valuediv = document.getElementById(divId + "value");
   valuediv.innerHTML = results.bindings.length;
   languages.appendChild(total);
-
+  
   const table = createTable(["Language", "Link"]);
   results.bindings.forEach(result => {
     vars.forEach(variable => {
       const tr = document.createElement("tr");
-
       const languageText = getLanguageWithoutProtocol(result[variable].value);
       const languageTd = createTableCell("property", "div", languageText);
       tr.appendChild(languageTd);
-
+      
       const link = "./references.html?url=" + result[variable].value;
       const linkText = decodeURI(result[variable].value);
       const linkTd = createTableCell(null, "a", linkText, { href: link });
       tr.appendChild(linkTd);
-
+      
       table.appendChild(tr);
     });
   });
-
+  
   languages.appendChild(table);
+}
+
+function getValueWithoutProtocol(url) {
+  const parts = url.split('/');
+  const value = parts[parts.length - 1];
+
+  return value;
 }
 
 function createDivExternalLinksCount(divId, json) {
@@ -182,35 +209,34 @@ function createDivExternalLinks(divId, json) {
   const valuediv = document.getElementById("externalidentifiersvalue");
   valuediv.innerHTML = results.bindings.length;
   references.appendChild(statementTotal);
-
+  
   const table = createTable(["External identifier", "Value"]);
   results.bindings.forEach(result => {
     const tr = document.createElement("tr");
-
     const property = getValueWithoutProtocol(result["property"].value);
     const propertyTd = createTableCell("property", "a", property, { href: result["property"].value });
     tr.appendChild(propertyTd);
-
+    
     const valueTd = createTableCell(null, "text", result["value"].value);
     tr.appendChild(valueTd);
-
+    
     table.appendChild(tr);
   });
-
+  
   references.appendChild(table);
 }
 
 function createDivReferencesCount(divId, json) {
   const { results } = json;
   const refs = {};
-
+  
   results.bindings.forEach(result => {
     if (result["reference"] !== undefined) {
       const propValue = result['prop'].value;
       refs[propValue] = (refs[propValue] || 0) + 1;
     }
   });
-
+  
   if (results.bindings.length !== 0) {
     const percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
     const valuediv = document.getElementById("referencesvalue");
@@ -229,31 +255,29 @@ function createDivReferences(divId, json) {
       refs[propValue] = (refs[propValue] || 0) + 1;
     }
   });
-
+  
   const total = `Total ${Object.keys(refs).length} reference statements for a total of ${results.bindings.length} statements`;
   const percentage = ((Object.keys(refs).length * 100) / results.bindings.length).toFixed(2);
   const statementTotal = createHeader(`${total} (${percentage}%)`);
   const valuediv = document.getElementById("referencesvalue");
   valuediv.innerHTML = percentage;
   references.appendChild(statementTotal);
-
+  
   const table = createTable(["Property", "Number of statements"]);
   Object.keys(refs).forEach(prop => {
     const tr = document.createElement("tr");
-
     const property = getValueWithoutProtocol(prop);
     const propertyTd = createTableCell("property", "a", property, { href: prop });
     tr.appendChild(propertyTd);
-
+    
     const valueTd = createTableCell(null, "text", refs[prop]);
     tr.appendChild(valueTd);
-
+    
     table.appendChild(tr);
   });
-
+  
   references.appendChild(table);
 }
-
 
 function createHeader(text) {
   const header = document.createElement("h3");
@@ -289,23 +313,6 @@ function createTableCell(className, element, text, attributes) {
   return td;
 }
 
-function createAnchor(href, text) {
-  const a = document.createElement("a");
-  a.setAttribute("href", href);
-  a.innerHTML = text;
-  return a;
-}
-
-function getValueWithoutProtocol(value) {
-  return value.replace(/.*\//, "");
-}
-
-function getLanguageWithoutProtocol(languageText) {
-  languageText = languageText.replace("https://", "");
-  return languageText.replace(/\..*/, "");
-
-}
-
 function createSpanValue(value) {
   const valuespin = document.createElement("div");
   valuespin.innerHTML = ` ${value} `;
@@ -315,7 +322,7 @@ function createSpanValue(value) {
 function createSpanLabel(divId, json) {
   const { head: { vars }, results } = json;
   const label = document.getElementById("itemLabel");
-
+  
   results.bindings.forEach(result => {
     vars.forEach(variable => {
       const valuespin = createSpanValue(result[variable].value);
@@ -326,29 +333,31 @@ function createSpanLabel(divId, json) {
 }
 
 function createDivSearchResults(divId, json) {
-  searchresults = document.getElementById("searchresults");
+  const searchresults = document.getElementById("searchresults");
   while (searchresults.hasChildNodes()) {
     searchresults.removeChild(searchresults.lastChild);
   }
+  
   if ("search" in json) {
-    for (result in json["search"]) {
-      var div = document.createElement("div");
-      var a = document.createElement("a");
-      a.setAttribute('href', "./provenance.html?item=" + json["search"][result]["id"]);
-      var text = document.createTextNode(json["search"][result]["label"]
-        + " (" + json["search"][result]["id"] + ")");
+    for (const result of json["search"]) {
+      const div = document.createElement("div");
+      const a = document.createElement("a");
+      a.setAttribute('href', "./provenance.html?item=" + result["id"]);
+      const text = document.createTextNode(result["label"] + " (" + result["id"] + ")");
       a.append(text);
       div.append(a);
-      var span = document.createElement("span");
-      var spanText = document.createTextNode(": " + json["search"][result]["description"] + " ");
+      
+      const span = document.createElement("span");
+      const spanText = document.createTextNode(": " + result["description"] + " ");
       span.append(spanText);
       div.append(span);
-
-      var more = document.createElement("a");
-      more.setAttribute('href', json["search"][result]["concepturi"]);
-      var moretext = document.createTextNode("(More...)");
+      
+      const more = document.createElement("a");
+      more.setAttribute('href', result["concepturi"]);
+      const moretext = document.createTextNode("(More...)");
       more.append(moretext);
       div.append(more);
+      
       searchresults.append(div);
     }
   }
@@ -368,7 +377,6 @@ function processQuery(queryName, params) {
   const processedElementId = elementId.replace(/{{(\w+)}}/g, (match, key) => params[key]);
   executeQuery(processedQuery, callback, processedElementId);
 }
-
 
 function getWikiLinks(wikiproject, item = "Q1339") {
   processQuery("wikiLinks", { item, wikiproject });
@@ -397,7 +405,6 @@ function getReferences(item = "Q1339") {
 function getItem() {
   const language = getQueryParam("language") || "en";
   const search = getQueryParam("search") || "search";
-
   const queryparams = `wbsearchentities&search=${search}&language=${language}&props=url&limit=10&origin=*&format=json`;
   queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
@@ -412,26 +419,22 @@ function getQueryParam(name) {
   return null;
 }
 
-
 function getLinks() {
   const item = getQueryParam('item');
   getLabel(item);
   getExternalLinks(item);
   getReferences(item);
-
+  
   for (const project of projects) {
     getWikiLinks(project, item);
   }
 }
 
 function getLinksAndCompare() {
-  var compare = getQueryParam("compare") || "Q1339, Q254";
-  compare = decodeURIComponent(compare).replace("+", "");
-
-  items = compare.split(",");
-  for (var i in items) {
-    item = items[i];
-    item = item.replace(/\s/g, '');
+  const compare = getQueryParam("compare") || "Q1339, Q254";
+  const items = compare.split(",").map(item => item.trim());
+  
+  for (const item of items) {
     getLabel(item);
     getExternalLinksCount(item);
     getReferenceCount(item);
@@ -441,22 +444,20 @@ function getLinksAndCompare() {
 
 function findItem(e) {
   e.preventDefault();
-
+  
   const language = getQueryParam("language") || "en";
   const search = getQueryParam("search") || "search";
   const queryparams = `wbsearchentities&search=${search}&language=${language}&props=url&limit=10&origin=*&format=json`;
-
+  
   queryMediaWiki(queryparams, createDivSearchResults, "searchresults");
 }
 
-
 document.getElementById("headersearchtext").addEventListener("keydown", function (event) {
   event = event || window.event;
-  console.log(event.target.id);
-
+  
   if (event.keyCode === 13) {
-    var search = this.value;
-
+    const search = this.value;
+    
     if (window.location.pathname.includes("compare.html")) {
       getLinksAndCompare(event);
     } else {
