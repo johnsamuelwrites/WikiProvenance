@@ -1,44 +1,853 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <title>WikiProvenance</title>
-  <link rel="stylesheet" type="text/css" href="style.css" />
-  <script type="text/javascript" src="mwwikiprov.js"> </script>
-</head>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WikiProvenance - References Analysis</title>
+    <style>
+      /* ===========================
+       MODERN WIKI DESIGN SYSTEM
+       =========================== */
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-<body onload="analyseReferences()">
-  <div id="header">
-    <div id="logo"><a href="./index.html">WikiProvenance</a></div>
-    <div id="headersearch">
-      <form action="./search.html" method="get">
-        <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach" />
-        <button id="headersearchbutton" type="submit" value="Search">Search</button>
-      </form>
-    </div>
-  </div>
-  <div id="sidebar">
-    <div id="sidebarlinks">
-      <ul>
-        <li><a href="#statisticssection">Statistics</a></li>
-        <li><a href="#referencessection">References</a></li>
-        <li><a href="./wikiprovenance.html">About</a> </li>
-    </div>
-  </div>
-  <div id="content">
-    <div class="section" id="statisticssection">
-      <h2>References describing <span id="itemCode"></span></h2>
-      <h3><span id="itemLabel"></span> </h3>
-      <div href="#referencessection">
-        <div id="references">
+      :root {
+        /* Wiki-inspired Light Palette */
+        --wiki-blue: #0645ad;
+        --wiki-blue-light: #3366cc;
+        --wiki-blue-hover: #0b0080;
+        --wiki-blue-bg: #eaf3ff;
+        --wiki-accent: #00af89;
+        --wiki-orange: #ff6b35;
+        --wiki-purple: #6b4ce6;
+        --wiki-teal: #14b8a6;
+
+        /* Light Base Colors */
+        --bg-white: #ffffff;
+        --bg-light: #f8f9fa;
+        --bg-lighter: #f0f2f5;
+        --bg-blue-tint: #f6faff;
+        --border-light: #e0e4e8;
+        --border-medium: #c8ccd1;
+        --border-accent: #a2a9b1;
+
+        /* Text Colors */
+        --text-primary: #202122;
+        --text-secondary: #54595d;
+        --text-muted: #72777d;
+        --text-link: #0645ad;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.12);
+        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+        /* Spacing */
+        --space-xs: 0.25rem;
+        --space-sm: 0.5rem;
+        --space-md: 1rem;
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --space-2xl: 3rem;
+        --space-3xl: 4rem;
+
+        /* Typography */
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+
+        /* Border Radius */
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-2xl: 24px;
+        --radius-full: 9999px;
+      }
+
+      /* ===========================
+       RESET & BASE
+       =========================== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 100px;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background: var(--bg-light);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Subtle pattern background */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(6, 69, 173, 0.02) 2px, rgba(6, 69, 173, 0.02) 4px),
+          repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(6, 69, 173, 0.02) 2px, rgba(6, 69, 173, 0.02) 4px);
+        background-size: 40px 40px;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* ===========================
+       HEADER
+       =========================== */
+      #header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: var(--bg-white);
+        border-bottom: 3px solid var(--wiki-blue);
+        box-shadow: var(--shadow-md);
+        padding: var(--space-lg) 0;
+      }
+
+      #header>div {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 var(--space-xl);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-xl);
+        flex-wrap: wrap;
+      }
+
+      #logo {
+        font-family: var(--font-sans);
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      #logo::before {
+        content: '◆';
+        color: var(--wiki-blue);
+        font-size: 1.2em;
+        animation: rotate 10s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      #logo a {
+        background: linear-gradient(135deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-decoration: none;
+      }
+
+      #headersearch {
+        flex: 1;
+        max-width: 600px;
+      }
+
+      #headersearch form {
+        display: flex;
+        gap: var(--space-sm);
+      }
+
+      #headersearchtext {
+        flex: 1;
+        padding: var(--space-md) var(--space-lg);
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-full);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        background: var(--bg-white);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        outline: none;
+      }
+
+      #headersearchtext:focus {
+        border-color: var(--wiki-blue);
+        box-shadow: 0 0 0 3px rgba(6, 69, 173, 0.1);
+      }
+
+      #headersearchtext::placeholder {
+        color: var(--text-muted);
+      }
+
+      #headersearchbutton {
+        padding: var(--space-md) var(--space-xl);
+        background: var(--wiki-blue);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      #headersearchbutton:hover {
+        background: var(--wiki-blue-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      #headersearchbutton:active {
+        transform: translateY(0);
+      }
+
+      /* ===========================
+       SIDEBAR NAVIGATION
+       =========================== */
+      #sidebar {
+        position: fixed;
+        left: 0;
+        top: 85px;
+        width: 280px;
+        height: calc(100vh - 85px);
+        padding: var(--space-xl);
+        overflow-y: auto;
+        z-index: 50;
+        background: var(--bg-white);
+        border-right: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+      }
+
+      #sidebar::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #sidebar::-webkit-scrollbar-track {
+        background: var(--bg-lighter);
+      }
+
+      #sidebar::-webkit-scrollbar-thumb {
+        background: var(--border-medium);
+        border-radius: var(--radius-full);
+      }
+
+      #sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--wiki-blue);
+      }
+
+      #sidebarlinks ul {
+        list-style: none;
+      }
+
+      #sidebarlinks li {
+        margin-bottom: var(--space-md);
+      }
+
+      #sidebarlinks a {
+        display: block;
+        padding: var(--space-sm) var(--space-md);
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+        font-weight: 600;
+        background: var(--wiki-blue-bg);
+        border: 1px solid var(--border-light);
+      }
+
+      #sidebarlinks a:hover {
+        background: var(--wiki-blue-bg);
+        border-color: var(--wiki-blue);
+        color: var(--wiki-blue);
+        transform: translateX(4px);
+      }
+
+      /* ===========================
+       MAIN CONTENT
+       =========================== */
+      #content {
+        margin-left: 300px;
+        margin-top: 85px;
+        padding: var(--space-2xl) var(--space-xl);
+        max-width: calc(1600px - 300px);
+        position: relative;
+        z-index: 1;
+        min-height: calc(100vh - 85px - 100px);
+      }
+
+      /* ===========================
+       SECTION STYLES
+       =========================== */
+      .section {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-left: 4px solid var(--wiki-blue);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        margin-bottom: var(--space-xl);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(6, 69, 173, 0.05) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .section h2 {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: var(--space-md);
+        color: var(--text-secondary);
+        position: relative;
+        z-index: 1;
+      }
+
+      .section h3 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: var(--space-xl);
+        background: linear-gradient(135deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        padding-bottom: var(--space-sm);
+      }
+
+      .section h3::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        border-radius: var(--radius-full);
+      }
+
+      #itemCode {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        color: var(--wiki-blue);
+        background: rgba(6, 69, 173, 0.1);
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+      }
+
+      /* ===========================
+       REFERENCES CONTENT
+       =========================== */
+      #references {
+        position: relative;
+        z-index: 1;
+        margin-top: var(--space-xl);
+      }
+
+      /* Table container with scroll */
+      #references .table-container {
+        overflow: hidden;
+        margin: var(--space-lg) 0;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        background: var(--bg-white);
+        box-shadow: var(--shadow-sm);
+      }
+
+      #references .table-wrapper {
+        max-height: 600px;
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+
+      #references .table-wrapper::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      #references .table-wrapper::-webkit-scrollbar-track {
+        background: var(--bg-lighter);
+      }
+
+      #references .table-wrapper::-webkit-scrollbar-thumb {
+        background: var(--border-medium);
+        border-radius: var(--radius-sm);
+      }
+
+      #references .table-wrapper::-webkit-scrollbar-thumb:hover {
+        background: var(--wiki-blue);
+      }
+
+      #references .table-wrapper::-webkit-scrollbar-corner {
+        background: var(--bg-lighter);
+      }
+
+      #references table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.9rem;
+      }
+
+      #references thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      #references tr>th {
+        background: linear-gradient(180deg, var(--wiki-blue) 0%, var(--wiki-blue-hover) 100%);
+        font-size: 0.85rem;
+        line-height: 1.4;
+        text-align: center;
+        color: white;
+        padding: var(--space-md) var(--space-lg);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 3px solid var(--wiki-blue-hover);
+        white-space: nowrap;
+      }
+
+      #references tr>td {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        text-align: left;
+        padding: var(--space-md);
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-light);
+        background: var(--bg-white);
+        transition: all 0.2s ease;
+      }
+
+      #references tbody tr:hover {
+        background: var(--wiki-blue-bg);
+      }
+
+      #references tbody tr:hover td {
+        background: transparent;
+      }
+
+      #references tbody tr:nth-child(even) td {
+        background: var(--bg-light);
+      }
+
+      #references tbody tr:nth-child(even):hover td {
+        background: transparent;
+      }
+
+      #references .property,
+      #references .language,
+      #references .datatype {
+        background: linear-gradient(135deg, var(--wiki-blue) 0%, var(--wiki-blue-light) 100%) !important;
+        color: white;
+        line-height: 1.5;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        text-align: center;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+
+      #references .property>a,
+      #references .language>a,
+      #references .datatype>a {
+        color: white;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      #references .property>a:hover,
+      #references .language>a:hover,
+      #references .datatype>a:hover {
+        text-decoration: underline;
+        opacity: 0.9;
+      }
+
+      #references tbody td a {
+        color: var(--wiki-blue);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        word-break: break-word;
+        font-weight: 500;
+      }
+
+      #references tbody td a:hover {
+        color: var(--wiki-blue-hover);
+        text-decoration: underline;
+      }
+
+      /* Row count indicator */
+      #references .table-info {
+        padding: var(--space-sm) var(--space-md);
+        background: var(--bg-lighter);
+        border-top: 1px solid var(--border-light);
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        text-align: center;
+        font-weight: 500;
+      }
+
+      /* Loading state */
+      #references:empty::before {
+        content: 'Loading reference data...';
+        display: block;
+        text-align: center;
+        color: var(--text-muted);
+        font-style: italic;
+        padding: var(--space-3xl);
+        background: var(--bg-light);
+        border: 2px dashed var(--border-light);
+        border-radius: var(--radius-lg);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* ===========================
+       FOOTER
+       =========================== */
+      #footer {
+        background: var(--bg-white);
+        border-top: 1px solid var(--border-light);
+        padding: var(--space-2xl) 0;
+        margin-top: var(--space-3xl);
+        margin-left: 300px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      #footertext {
+        max-width: calc(1600px - 300px);
+        margin: 0 auto;
+        padding: 0 var(--space-xl);
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 400;
+      }
+
+      #footertext a {
+        color: var(--wiki-blue);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      #footertext a:hover {
+        color: var(--wiki-blue-hover);
+        text-decoration: underline;
+      }
+
+      /* ===========================
+       ANIMATIONS
+       =========================== */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      /* ===========================
+       RESPONSIVE DESIGN
+       =========================== */
+      @media (max-width: 1200px) {
+        #sidebar {
+          position: static;
+          width: 100%;
+          height: auto;
+          padding: var(--space-lg);
+          margin-bottom: var(--space-xl);
+          border-right: none;
+          border-bottom: 1px solid var(--border-light);
+        }
+
+        #sidebarlinks ul {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--space-sm);
+        }
+
+        #sidebarlinks li {
+          margin-bottom: 0;
+        }
+
+        #content {
+          margin-left: 0;
+          max-width: 1600px;
+        }
+
+        #footer {
+          margin-left: 0;
+        }
+
+        #footertext {
+          max-width: 1600px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        #header>div {
+          flex-direction: column;
+          gap: var(--space-lg);
+        }
+
+        #headersearch {
+          width: 100%;
+          max-width: none;
+        }
+
+        #content {
+          padding: var(--space-xl) var(--space-lg);
+        }
+
+        .section {
+          padding: var(--space-xl) var(--space-lg);
+        }
+
+        #references table {
+          font-size: 0.85rem;
+        }
+
+        #references tbody td {
+          padding: var(--space-sm);
+        }
+
+        #references .table-wrapper {
+          max-height: 400px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #headersearch form {
+          flex-direction: column;
+        }
+
+        #headersearchbutton {
+          width: 100%;
+        }
+
+        .section h2 {
+          font-size: 1.25rem;
+        }
+
+        .section h3 {
+          font-size: 1.5rem;
+        }
+
+        #references thead th {
+          padding: var(--space-sm);
+          font-size: 0.75rem;
+        }
+
+        #references .table-wrapper {
+          max-height: 300px;
+        }
+      }
+
+      /* ===========================
+       ACCESSIBILITY
+       =========================== */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 0;
+        background: var(--wiki-blue);
+        color: white;
+        padding: var(--space-md) var(--space-lg);
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        z-index: 10000;
+      }
+
+      .skip-link:focus {
+        top: var(--space-md);
+        left: var(--space-md);
+        outline: 3px solid var(--wiki-accent);
+        outline-offset: 3px;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--wiki-blue);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* ===========================
+       TABLE AUTO-WRAPPING
+       =========================== */
+      .section>div:not(.statistics-grid) {
+        overflow: hidden;
+      }
+    </style>
+    <script type="text/javascript" src="mwwikiprov.js"></script>
+    <script>
+      // Wrap all tables in scrollable containers with max height
+      function wrapTables() {
+        const referencesDiv = document.getElementById('references');
+        if (!referencesDiv) return;
+
+        const tables = referencesDiv.querySelectorAll('table');
+
+        tables.forEach(table => {
+          // Skip if already wrapped
+          if (table.parentElement.classList.contains('table-wrapper')) {
+            return;
+          }
+
+          // Create wrapper container
+          const container = document.createElement('div');
+          container.className = 'table-container';
+
+          // Create scrollable wrapper
+          const wrapper = document.createElement('div');
+          wrapper.className = 'table-wrapper';
+
+          // Insert container before table
+          table.parentNode.insertBefore(container, table);
+
+          // Move table into wrapper
+          wrapper.appendChild(table);
+          container.appendChild(wrapper);
+
+          // Add row count info
+          const rowCount = table.querySelectorAll('tbody tr').length;
+          if (rowCount > 10) {
+            const info = document.createElement('div');
+            info.className = 'table-info';
+            info.textContent = `Showing ${rowCount} rows • Scroll to view all`;
+            container.appendChild(info);
+          }
+        });
+      }
+
+      // Run after tables are populated
+      window.addEventListener('load', function () {
+        // Wait for tables to be populated
+        setTimeout(wrapTables, 500);
+
+        // Also wrap tables when they're dynamically added
+        const observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (mutation.addedNodes.length) {
+              wrapTables();
+            }
+          });
+        });
+
+        // Observe references div for table additions
+        const referencesDiv = document.getElementById('references');
+        if (referencesDiv) {
+          observer.observe(referencesDiv, { childList: true, subtree: true });
+        }
+      });
+    </script>
+  </head>
+
+  <body onload="analyseReferences()">
+    <a href="#content" class="skip-link">Skip to main content</a>
+
+    <div id="header">
+      <div>
+        <div id="logo"><a href="./index.html">WikiProvenance</a></div>
+        <div id="headersearch">
+          <form action="./search.html" method="get">
+            <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach"
+              aria-label="Search for Wikidata items" />
+            <button id="headersearchbutton" type="submit" value="Search">Search</button>
+          </form>
         </div>
       </div>
     </div>
+
+    <div id="sidebar">
+      <div id="sidebarlinks">
+        <ul>
+          <li><a href="#statisticssection">Statistics</a></li>
+          <li><a href="#referencessection">References</a></li>
+          <li><a href="./wikiprovenance.html">About</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="content">
+      <div class="section" id="statisticssection">
+        <h2>References describing <span id="itemCode"></span></h2>
+        <h3><span id="itemLabel"></span></h3>
+        <div id="referencessection">
+          <div id="references"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="footer">
       <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
           href="https://mediawiki.org/">MediaWiki</a> API</p>
     </div>
-</body>
+  </body>
 
 </html>

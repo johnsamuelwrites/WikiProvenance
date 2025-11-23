@@ -1,66 +1,1129 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <title>WikiProvenance</title>
-  <link rel="stylesheet" type="text/css" href="style.css" />
-</head>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WikiProvenance - Explore Wikidata Source Statistics</title>
+    <meta name="description"
+      content="Analyze and compare source statistics for Wikidata items. Explore references, external identifiers, and cross-wiki links.">
+    <style>
+      /* ===========================
+       MODERN WIKI DESIGN SYSTEM
+       =========================== */
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-<body>
-  <div id="header">
-    <div id="logo"><a href="./index.html">WikiProvenance</a></div>
-    <div id="headersearch">
-      <form action="./search.html" method="get">
-        <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach" />
-        <button id="headersearchbutton" type="submit" value="Search">Search</button>
-      </form>
+      :root {
+        /* Wiki-inspired Light Palette */
+        --wiki-blue: #0645ad;
+        --wiki-blue-light: #3366cc;
+        --wiki-blue-hover: #0b0080;
+        --wiki-blue-bg: #eaf3ff;
+        --wiki-accent: #00af89;
+        --wiki-orange: #ff6b35;
+        --wiki-purple: #6b4ce6;
+        --wiki-teal: #14b8a6;
+
+        /* Light Base Colors */
+        --bg-white: #ffffff;
+        --bg-light: #f8f9fa;
+        --bg-lighter: #f0f2f5;
+        --bg-blue-tint: #f6faff;
+        --border-light: #e0e4e8;
+        --border-medium: #c8ccd1;
+        --border-accent: #a2a9b1;
+
+        /* Text Colors */
+        --text-primary: #202122;
+        --text-secondary: #54595d;
+        --text-muted: #72777d;
+        --text-link: #0645ad;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.12);
+        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+        /* Spacing */
+        --space-xs: 0.25rem;
+        --space-sm: 0.5rem;
+        --space-md: 1rem;
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --space-2xl: 3rem;
+        --space-3xl: 4rem;
+        --space-4xl: 6rem;
+
+        /* Typography */
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+
+        /* Border Radius */
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-2xl: 24px;
+        --radius-full: 9999px;
+      }
+
+      /* ===========================
+       RESET & BASE
+       =========================== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background: var(--bg-light);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Subtle pattern background */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(6, 69, 173, 0.02) 2px, rgba(6, 69, 173, 0.02) 4px),
+          repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(6, 69, 173, 0.02) 2px, rgba(6, 69, 173, 0.02) 4px);
+        background-size: 40px 40px;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* ===========================
+       HEADER
+       =========================== */
+      #header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: var(--bg-white);
+        border-bottom: 3px solid var(--wiki-blue);
+        box-shadow: var(--shadow-md);
+        padding: var(--space-lg) 0;
+      }
+
+      #header>div {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 var(--space-xl);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-xl);
+        flex-wrap: wrap;
+      }
+
+      #logo {
+        font-family: var(--font-sans);
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      #logo::before {
+        content: '◆';
+        color: var(--wiki-blue);
+        font-size: 1.2em;
+        animation: rotate 10s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      #logo a {
+        background: linear-gradient(135deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-decoration: none;
+      }
+
+      #headersearch {
+        flex: 1;
+        max-width: 600px;
+      }
+
+      #headersearch form {
+        display: flex;
+        gap: var(--space-sm);
+      }
+
+      #headersearchtext {
+        flex: 1;
+        padding: var(--space-md) var(--space-lg);
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-full);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        background: var(--bg-white);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        outline: none;
+      }
+
+      #headersearchtext:focus {
+        border-color: var(--wiki-blue);
+        box-shadow: 0 0 0 3px rgba(6, 69, 173, 0.1);
+      }
+
+      #headersearchtext::placeholder {
+        color: var(--text-muted);
+      }
+
+      #headersearchbutton {
+        padding: var(--space-md) var(--space-xl);
+        background: var(--wiki-blue);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      #headersearchbutton:hover {
+        background: var(--wiki-blue-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      #headersearchbutton:active {
+        transform: translateY(0);
+      }
+
+      /* ===========================
+       SIDEBAR NAVIGATION
+       =========================== */
+      #sidebar {
+        position: fixed;
+        left: 0;
+        top: 85px;
+        width: 280px;
+        height: calc(100vh - 85px);
+        padding: var(--space-xl);
+        overflow-y: auto;
+        z-index: 50;
+        background: var(--bg-white);
+        border-right: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+      }
+
+      #sidebar::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #sidebar::-webkit-scrollbar-track {
+        background: var(--bg-lighter);
+      }
+
+      #sidebar::-webkit-scrollbar-thumb {
+        background: var(--border-medium);
+        border-radius: var(--radius-full);
+      }
+
+      #sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--wiki-blue);
+      }
+
+      #sidebarlinks ul {
+        list-style: none;
+      }
+
+      #sidebarlinks li {
+        margin-bottom: var(--space-md);
+      }
+
+      #sidebarlinks a {
+        display: block;
+        padding: var(--space-sm) var(--space-md);
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+        font-weight: 600;
+        background: var(--wiki-blue-bg);
+        border: 1px solid var(--border-light);
+      }
+
+      #sidebarlinks a:hover {
+        background: var(--wiki-blue-bg);
+        border-color: var(--wiki-blue);
+        color: var(--wiki-blue);
+        transform: translateX(4px);
+      }
+
+      /* ===========================
+       MAIN CONTENT
+       =========================== */
+      #content {
+        margin-left: 300px;
+        margin-top: 85px;
+        padding: var(--space-3xl) var(--space-xl) var(--space-4xl);
+        max-width: calc(1400px - 300px);
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ===========================
+       HERO SECTION
+       =========================== */
+      .hero {
+        text-align: center;
+        padding: var(--space-4xl) var(--space-xl);
+        margin-bottom: var(--space-4xl);
+        background: linear-gradient(135deg, var(--bg-white) 0%, var(--wiki-blue-bg) 100%);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(6, 69, 173, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+      }
+
+      .hero::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -20%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(0, 175, 137, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: var(--space-lg);
+        background: linear-gradient(135deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+        color: var(--text-secondary);
+        line-height: 1.5;
+        max-width: 800px;
+        margin: 0 auto var(--space-2xl);
+        font-weight: 500;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: var(--space-md);
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-lg) var(--space-2xl);
+        background: var(--wiki-blue);
+        color: white;
+        text-decoration: none;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 1.125rem;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-md);
+      }
+
+      .cta-button:hover {
+        background: var(--wiki-blue-hover);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .cta-button.secondary {
+        background: var(--bg-white);
+        color: var(--wiki-blue);
+        border: 2px solid var(--wiki-blue);
+      }
+
+      .cta-button.secondary:hover {
+        background: var(--wiki-blue-bg);
+      }
+
+      /* ===========================
+       FEATURES SECTION
+       =========================== */
+      .features {
+        margin-bottom: var(--space-4xl);
+      }
+
+      .features-header {
+        text-align: center;
+        margin-bottom: var(--space-3xl);
+      }
+
+      .features-header h2 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: var(--space-md);
+        color: var(--text-primary);
+      }
+
+      .features-header p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--space-xl);
+      }
+
+      .feature-card {
+        background: var(--bg-white);
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+
+      .feature-card:hover {
+        border-color: var(--wiki-blue);
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .feature-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--wiki-blue-bg) 0%, rgba(0, 175, 137, 0.1) 100%);
+        border: 2px solid var(--wiki-blue);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-bottom: var(--space-lg);
+      }
+
+      .feature-card:nth-child(1) .feature-icon {
+        border-color: var(--wiki-blue);
+      }
+
+      .feature-card:nth-child(2) .feature-icon {
+        border-color: var(--wiki-accent);
+      }
+
+      .feature-card:nth-child(3) .feature-icon {
+        border-color: var(--wiki-purple);
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: var(--space-md);
+        color: var(--text-primary);
+      }
+
+      .feature-card p {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: var(--space-lg);
+      }
+
+      .feature-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        color: var(--wiki-blue);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .feature-link:hover {
+        color: var(--wiki-blue-hover);
+        gap: var(--space-sm);
+      }
+
+      /* ===========================
+       EXAMPLES SECTION
+       =========================== */
+      .section {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-left: 4px solid var(--wiki-blue);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        margin-bottom: var(--space-xl);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .section h2 {
+        font-size: clamp(1.5rem, 3vw, 1.875rem);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: var(--space-lg);
+        color: var(--text-primary);
+        position: relative;
+        display: inline-block;
+        padding-bottom: var(--space-sm);
+      }
+
+      .section h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        border-radius: var(--radius-full);
+      }
+
+      .section p {
+        color: var(--text-secondary);
+        margin-bottom: var(--space-lg);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .section ul {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--space-md);
+      }
+
+      .section li {
+        background: var(--bg-light);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        transition: all 0.2s ease;
+      }
+
+      .section li:hover {
+        background: var(--wiki-blue-bg);
+        border-color: var(--wiki-blue);
+        transform: translateX(4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .section li a {
+        display: block;
+        padding: var(--space-lg);
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .section li a:hover {
+        color: var(--wiki-blue);
+      }
+
+      .section li a::before {
+        content: '→';
+        margin-right: var(--space-sm);
+        color: var(--wiki-blue);
+        font-weight: 700;
+      }
+
+      .item-code {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-left: var(--space-xs);
+      }
+
+      /* Color variations for sections */
+      .section:nth-child(1) {
+        border-left-color: var(--wiki-blue);
+      }
+
+      .section:nth-child(2) {
+        border-left-color: var(--wiki-accent);
+      }
+
+      .section:nth-child(3) {
+        border-left-color: var(--wiki-purple);
+      }
+
+      .section:nth-child(4) {
+        border-left-color: var(--wiki-orange);
+      }
+
+      /* ===========================
+       STATS BANNER
+       =========================== */
+      .stats-banner {
+        background: linear-gradient(135deg, var(--wiki-blue) 0%, var(--wiki-blue-hover) 100%);
+        color: white;
+        padding: var(--space-3xl) var(--space-2xl);
+        border-radius: var(--radius-2xl);
+        margin-bottom: var(--space-4xl);
+        box-shadow: var(--shadow-xl);
+        text-align: center;
+      }
+
+      .stats-banner h2 {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        margin-bottom: var(--space-lg);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--space-xl);
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 900;
+        display: block;
+        margin-bottom: var(--space-xs);
+        color: white;
+      }
+
+      .stat-label {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        font-weight: 500;
+      }
+
+      /* ===========================
+       FOOTER
+       =========================== */
+      #footer {
+        background: var(--bg-white);
+        border-top: 1px solid var(--border-light);
+        padding: var(--space-2xl) 0;
+        margin-top: var(--space-4xl);
+        margin-left: 300px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      #footertext {
+        max-width: calc(1400px - 300px);
+        margin: 0 auto;
+        padding: 0 var(--space-xl);
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 400;
+      }
+
+      #footertext a {
+        color: var(--wiki-blue);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      #footertext a:hover {
+        color: var(--wiki-blue-hover);
+        text-decoration: underline;
+      }
+
+      /* ===========================
+       ANIMATIONS
+       =========================== */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .hero {
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      .features {
+        animation: fadeInUp 0.8s ease-out 0.2s backwards;
+      }
+
+      .feature-card {
+        animation: scaleIn 0.6s ease-out backwards;
+      }
+
+      .feature-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+
+      .feature-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .feature-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      .section {
+        animation: fadeInUp 0.6s ease-out backwards;
+      }
+
+      .section:nth-child(1) {
+        animation-delay: 0.4s;
+      }
+
+      .section:nth-child(2) {
+        animation-delay: 0.5s;
+      }
+
+      .section:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      .section:nth-child(4) {
+        animation-delay: 0.7s;
+      }
+
+      .stats-banner {
+        animation: fadeInUp 0.8s ease-out 0.3s backwards;
+      }
+
+      /* ===========================
+       RESPONSIVE DESIGN
+       =========================== */
+      @media (max-width: 1200px) {
+        #sidebar {
+          position: static;
+          width: 100%;
+          height: auto;
+          padding: var(--space-lg);
+          margin-bottom: var(--space-xl);
+          border-right: none;
+          border-bottom: 1px solid var(--border-light);
+        }
+
+        #sidebarlinks ul {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--space-sm);
+        }
+
+        #sidebarlinks li {
+          margin-bottom: 0;
+        }
+
+        #content {
+          margin-left: 0;
+          max-width: 1400px;
+        }
+
+        #footer {
+          margin-left: 0;
+        }
+
+        #footertext {
+          max-width: 1400px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        #header>div {
+          flex-direction: column;
+          gap: var(--space-lg);
+        }
+
+        #headersearch {
+          width: 100%;
+          max-width: none;
+        }
+
+        #content {
+          padding: var(--space-2xl) var(--space-lg);
+        }
+
+        .hero {
+          padding: var(--space-2xl) var(--space-lg);
+        }
+
+        .hero-cta {
+          flex-direction: column;
+        }
+
+        .cta-button {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section ul {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: var(--space-lg);
+        }
+      }
+
+      @media (max-width: 480px) {
+        #headersearch form {
+          flex-direction: column;
+        }
+
+        #headersearchbutton {
+          width: 100%;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===========================
+       ACCESSIBILITY
+       =========================== */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 0;
+        background: var(--wiki-blue);
+        color: white;
+        padding: var(--space-md) var(--space-lg);
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        z-index: 10000;
+      }
+
+      .skip-link:focus {
+        top: var(--space-md);
+        left: var(--space-md);
+        outline: 3px solid var(--wiki-accent);
+        outline-offset: 3px;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--wiki-blue);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="#content" class="skip-link">Skip to main content</a>
+
+    <div id="header">
+      <div>
+        <div id="logo"><a href="./index.html">WikiProvenance</a></div>
+        <div id="headersearch">
+          <form action="./search.html" method="get">
+            <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach"
+              aria-label="Search for Wikidata items" />
+            <button id="headersearchbutton" type="submit" value="Search">Search</button>
+          </form>
+        </div>
+      </div>
     </div>
-  </div>
-  <div id="sidebar">
-    <div id="sidebarlinks">
-      <ul>
-        <li><a href="./provenance.html?item=Q2013">Provenance</a></li>
-        <li><a href="./search.html">Search</a></li>
-        <li><a href="./compare.html">Compare</a></li>
-        <li><a href="./wikiprovenance.html">About</a> </li>
+
+    <div id="sidebar">
+      <div id="sidebarlinks">
+        <ul>
+          <li><a href="./provenance.html?item=Q2013">Provenance</a></li>
+          <li><a href="./search.html">Search</a></li>
+          <li><a href="./compare.html">Compare</a></li>
+          <li><a href="./wikiprovenance.html">About</a></li>
+        </ul>
+      </div>
     </div>
-  </div>
-  <div id="content">
-    <div class="section">
-      <h2>Examples</h2>
-      <ul>
-        <li><a href="./provenance.html?item=Q1339">Johann Sebastian Bach</a> (Q1339)</li>
-        <li><a href="./provenance.html?item=Q7397">Software</a> (Q7397)</li>
-        <li><a href="./provenance.html?item=Q9143">Programming language</a> (Q9143)</li>
-      </ul>
+
+    <div id="content">
+      <!-- HERO SECTION -->
+      <div class="hero">
+        <div class="hero-content">
+          <h1>Explore Wikidata Source Statistics</h1>
+          <p class="hero-subtitle">
+            Analyze and compare provenance information for millions of Wikidata items.
+            Discover references, external identifiers, and cross-wiki links in one comprehensive dashboard.
+          </p>
+          <div class="hero-cta">
+            <a href="./search.html" class="cta-button">
+              <span>🔍</span>
+              <span>Start Searching</span>
+            </a>
+            <a href="./wikiprovenance.html" class="cta-button secondary">
+              <span>📚</span>
+              <span>Learn More</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURES SECTION -->
+      <div class="features">
+        <div class="features-header">
+          <h2>What You Can Do</h2>
+          <p>Powerful tools to understand the provenance and coverage of Wikidata items</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Analyze Provenance</h3>
+            <p>
+              View comprehensive statistics on references, external identifiers, and links across
+              Wikimedia projects for any Wikidata item.
+            </p>
+            <a href="./provenance.html?item=Q1339" class="feature-link">
+              Try example <span>→</span>
+            </a>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Search Items</h3>
+            <p>
+              Find Wikidata items quickly by name and instantly access their source statistics
+              and provenance information.
+            </p>
+            <a href="./search.html" class="feature-link">
+              Start searching <span>→</span>
+            </a>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚖️</div>
+            <h3>Compare Items</h3>
+            <p>
+              Side-by-side comparison of source statistics for multiple Wikidata items to
+              understand relative coverage and documentation.
+            </p>
+            <a href="./compare.html?compare=Q1339,Q254" class="feature-link">
+              See comparison <span>→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS BANNER -->
+      <div class="stats-banner">
+        <h2>Powered by Wikidata</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-value">100M+</span>
+            <span class="stat-label">Wikidata Items</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">300+</span>
+            <span class="stat-label">Languages</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">1.5B+</span>
+            <span class="stat-label">Statements</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXAMPLES SECTION -->
+      <div class="section">
+        <h2>Popular Examples</h2>
+        <p>Explore provenance statistics for well-documented Wikidata items</p>
+        <ul>
+          <li>
+            <a href="./provenance.html?item=Q1339">
+              Johann Sebastian Bach <span class="item-code">Q1339</span>
+            </a>
+          </li>
+          <li>
+            <a href="./provenance.html?item=Q7397">
+              Software <span class="item-code">Q7397</span>
+            </a>
+          </li>
+          <li>
+            <a href="./provenance.html?item=Q9143">
+              Programming language <span class="item-code">Q9143</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- SEARCH EXAMPLES -->
+      <div class="section">
+        <h2>Try Searching</h2>
+        <p>Search for any topic to find related Wikidata items</p>
+        <ul>
+          <li>
+            <a href="./search.html?search=Wikipedia">
+              Search for "Wikipedia"
+            </a>
+          </li>
+          <li>
+            <a href="./search.html?search=Wikidata">
+              Search for "Wikidata"
+            </a>
+          </li>
+          <li>
+            <a href="./search.html?search=artificial intelligence">
+              Search for "Artificial Intelligence"
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- COMPARISON EXAMPLES -->
+      <div class="section">
+        <h2>Compare Items</h2>
+        <p>See how source statistics differ between related Wikidata items</p>
+        <ul>
+          <li>
+            <a href="./compare.html?compare=Q1339,Q254">
+              Bach vs. Mozart <span class="item-code">Q1339, Q254</span>
+            </a>
+          </li>
+          <li>
+            <a href="./compare.html?compare=Q90,Q84">
+              Paris vs. London <span class="item-code">Q90, Q84</span>
+            </a>
+          </li>
+          <li>
+            <a href="./compare.html?compare=Q5,Q515">
+              Human vs. City <span class="item-code">Q5, Q515</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ABOUT SECTION -->
+      <div class="section">
+        <h2>Learn More</h2>
+        <p>Understand how WikiProvenance works and the data sources it uses</p>
+        <ul>
+          <li>
+            <a href="./wikiprovenance.html">
+              About WikiProvenance
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="section">
-      <h2>Search</h2>
-      <ul>
-        <li><a href="./search.html?search=Wikipedia">Wikipedia</a></li>
-        <li><a href="./search.html?search=Wikidata">Wikidata</a></li>
-      </ul>
+
+    <div id="footer">
+      <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
+          href="https://mediawiki.org/">MediaWiki</a> API</p>
     </div>
-    <div class="section">
-      <h2>Compare</h2>
-      <ul>
-        <li><a href="compare.html?compare=Q1339,Q254">Johann Sebastian Bach and Wolfgang Amadeus Mozart</a></li>
-        <li><a href="compare.html?compare=Q90,Q84">Paris and London</a></li>
-      </ul>
-    </div>
-    <div class="section">
-      <h2>About</h2>
-      <ul>
-        <li><a href="./wikiprovenance.html">About</a></li>
-      </ul>
-    </div>
-  </div>
-  <div id="footer">
-    <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
-        href="https://mediawiki.org/">MediaWiki</a> API</p>
-  </div>
-  <script type="text/javascript" src="wikiprovenance.js"> </script>
-</body>
+
+    <script type="text/javascript" src="wikiprovenance.js"></script>
+  </body>
 
 </html>

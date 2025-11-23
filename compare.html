@@ -1,147 +1,1100 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <title>WikiProvenance</title>
-  <link rel="stylesheet" type="text/css" href="style.css" />
-</head>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WikiProvenance - Compare</title>
+    <style>
+      /* ===========================
+       MODERN WIKI DESIGN SYSTEM
+       =========================== */
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-<body>
-  <div id="header">
-    <div id="logo"><a href="./index.html">WikiProvenance</a></div>
-    <div id="headersearch">
-      <form action="./search.html" method="get">
-        <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach" />
-        <button id="headersearchbutton" type="submit" value="Search">Search</button>
-      </form>
+      :root {
+        /* Wiki-inspired Light Palette */
+        --wiki-blue: #0645ad;
+        --wiki-blue-light: #3366cc;
+        --wiki-blue-hover: #0b0080;
+        --wiki-blue-bg: #eaf3ff;
+        --wiki-accent: #00af89;
+        --wiki-orange: #ff6b35;
+        --wiki-purple: #6b4ce6;
+        --wiki-teal: #14b8a6;
+
+        /* Light Base Colors */
+        --bg-white: #ffffff;
+        --bg-light: #f8f9fa;
+        --bg-lighter: #f0f2f5;
+        --bg-blue-tint: #f6faff;
+        --border-light: #e0e4e8;
+        --border-medium: #c8ccd1;
+        --border-accent: #a2a9b1;
+
+        /* Text Colors */
+        --text-primary: #202122;
+        --text-secondary: #54595d;
+        --text-muted: #72777d;
+        --text-link: #0645ad;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.12);
+        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+        /* Spacing */
+        --space-xs: 0.25rem;
+        --space-sm: 0.5rem;
+        --space-md: 1rem;
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --space-2xl: 3rem;
+        --space-3xl: 4rem;
+
+        /* Typography */
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+
+        /* Border Radius */
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-full: 9999px;
+      }
+
+      /* ===========================
+       RESET & BASE
+       =========================== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 100px;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background: var(--bg-light);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Subtle pattern background */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(6, 69, 173, 0.02) 2px, rgba(6, 69, 173, 0.02) 4px),
+          repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(6, 69, 173, 0.02) 2px, rgba(6, 69, 173, 0.02) 4px);
+        background-size: 40px 40px;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* ===========================
+       HEADER
+       =========================== */
+      #header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: var(--bg-white);
+        border-bottom: 3px solid var(--wiki-blue);
+        box-shadow: var(--shadow-md);
+        padding: var(--space-lg) 0;
+      }
+
+      #header>div {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 var(--space-xl);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-xl);
+        flex-wrap: wrap;
+      }
+
+      #logo {
+        font-family: var(--font-sans);
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      #logo::before {
+        content: '◆';
+        color: var(--wiki-blue);
+        font-size: 1.2em;
+        animation: rotate 10s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      #logo a {
+        background: linear-gradient(135deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-decoration: none;
+      }
+
+      #headersearch {
+        flex: 1;
+        max-width: 600px;
+      }
+
+      #headersearch form {
+        display: flex;
+        gap: var(--space-sm);
+      }
+
+      #headersearchtext {
+        flex: 1;
+        padding: var(--space-md) var(--space-lg);
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-full);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        background: var(--bg-white);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        outline: none;
+      }
+
+      #headersearchtext:focus {
+        border-color: var(--wiki-blue);
+        box-shadow: 0 0 0 3px rgba(6, 69, 173, 0.1);
+      }
+
+      #headersearchtext::placeholder {
+        color: var(--text-muted);
+      }
+
+      #headersearchbutton {
+        padding: var(--space-md) var(--space-xl);
+        background: var(--wiki-blue);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      #headersearchbutton:hover {
+        background: var(--wiki-blue-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      #headersearchbutton:active {
+        transform: translateY(0);
+      }
+
+      /* ===========================
+       SIDEBAR NAVIGATION
+       =========================== */
+      #sidebar {
+        position: fixed;
+        left: 0;
+        top: 85px;
+        width: 280px;
+        height: calc(100vh - 85px);
+        padding: var(--space-xl);
+        overflow-y: auto;
+        z-index: 50;
+        background: var(--bg-white);
+        border-right: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+      }
+
+      #sidebar::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #sidebar::-webkit-scrollbar-track {
+        background: var(--bg-lighter);
+      }
+
+      #sidebar::-webkit-scrollbar-thumb {
+        background: var(--border-medium);
+        border-radius: var(--radius-full);
+      }
+
+      #sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--wiki-blue);
+      }
+
+      #sidebarlinks ul {
+        list-style: none;
+      }
+
+      #sidebarlinks li {
+        margin-bottom: var(--space-sm);
+      }
+
+      #sidebarlinks a {
+        display: block;
+        padding: var(--space-sm) var(--space-md);
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border: 1px solid transparent;
+      }
+
+      #sidebarlinks li:first-child a,
+      #sidebarlinks li:last-child a {
+        font-weight: 600;
+        background: var(--wiki-blue-bg);
+        border-color: var(--border-light);
+      }
+
+      #sidebarlinks a:hover {
+        background: var(--wiki-blue-bg);
+        border-color: var(--wiki-blue);
+        color: var(--wiki-blue);
+        transform: translateX(4px);
+      }
+
+      /* ===========================
+       MAIN CONTENT
+       =========================== */
+      #content {
+        margin-left: 300px;
+        margin-top: 85px;
+        padding: var(--space-2xl) var(--space-xl);
+        max-width: calc(1600px - 300px);
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ===========================
+       SECTIONS
+       =========================== */
+      .section {
+        margin-bottom: var(--space-3xl);
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-left: 4px solid var(--wiki-blue);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(6, 69, 173, 0.05) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .section h2 {
+        font-size: clamp(1.5rem, 3vw, 1.875rem);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: var(--space-xl);
+        position: relative;
+        display: inline-block;
+        color: var(--text-primary);
+        padding-bottom: var(--space-sm);
+      }
+
+      .section h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        border-radius: var(--radius-full);
+      }
+
+      /* Compare Form */
+      .section form {
+        display: flex;
+        gap: var(--space-md);
+        margin-top: var(--space-lg);
+        flex-wrap: wrap;
+      }
+
+      #compare {
+        flex: 1;
+        min-width: 300px;
+        padding: var(--space-lg) var(--space-xl);
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        font-family: var(--font-mono);
+        font-size: 1.125rem;
+        background: var(--bg-white);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        outline: none;
+      }
+
+      #compare:focus {
+        border-color: var(--wiki-blue);
+        box-shadow: 0 0 0 4px rgba(6, 69, 173, 0.1);
+        transform: translateY(-2px);
+      }
+
+      #compare::placeholder {
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+      }
+
+      /* Comparison styles */
+      .comparison-values {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: left;
+      }
+
+      .comparison-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.25rem 0.5rem;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+      }
+
+      .comparison-label {
+        font-size: 0.85rem;
+        color: #666;
+        max-width: 60%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .comparison-value {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #333;
+      }
+
+      /* Loading state */
+      .comparison-loading {
+        text-align: center;
+        padding: 2rem;
+        background: #f5f5f5;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 1rem;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Error state */
+      .comparison-error {
+        background: #fee;
+        border: 1px solid #fcc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        color: #c33;
+      }
+
+      /* Table comparison view */
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2rem 0;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+
+      .comparison-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .comparison-table .metric-label {
+        text-align: left;
+        font-weight: 500;
+        background: #f8f9fa;
+      }
+
+      .comparison-table .metric-value {
+        font-weight: 600;
+        color: #2c5aa0;
+      }
+
+      /* Responsive comparison */
+      @media (max-width: 768px) {
+        .comparison-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.25rem;
+        }
+
+        .comparison-label {
+          max-width: 100%;
+        }
+
+        .comparison-table {
+          font-size: 0.85rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+          padding: 0.5rem;
+        }
+      }
+
+      .section input[type="submit"] {
+        padding: var(--space-lg) var(--space-2xl);
+        background: var(--wiki-blue);
+        color: white;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-size: 1.125rem;
+        font-weight: 600;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .section input[type="submit"]:hover {
+        background: var(--wiki-blue-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .section input[type="submit"]:active {
+        transform: translateY(0);
+      }
+
+      /* ===========================
+       COMPARISON STATISTICS
+       =========================== */
+      #statisticssection {
+        border-left-color: var(--wiki-accent);
+      }
+
+      #itemLabel {
+        display: inline;
+        font-weight: 800;
+        color: var(--wiki-blue);
+        font-style: italic;
+      }
+
+      /* Statistics Grid Layout */
+      #statisticssection {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: var(--space-md);
+        padding: var(--space-2xl);
+      }
+
+      #statisticssection h2 {
+        width: 100%;
+        margin-bottom: var(--space-lg);
+      }
+
+      .statisticslink {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .comparisonstatistics {
+        background: linear-gradient(135deg, var(--bg-white) 0%, var(--wiki-blue-bg) 100%);
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        text-align: center;
+        min-width: 140px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .comparisonstatistics::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--wiki-blue) 0%, var(--wiki-accent) 100%);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+
+      .statisticslink:hover .comparisonstatistics {
+        border-color: var(--wiki-blue);
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .statisticslink:hover .comparisonstatistics::before {
+        transform: scaleX(1);
+      }
+
+      /* Color variations for statistics */
+      .statisticslink:nth-of-type(3n+1) .comparisonstatistics {
+        border-top-color: var(--wiki-blue);
+      }
+
+      .statisticslink:nth-of-type(3n+2) .comparisonstatistics {
+        border-top-color: var(--wiki-accent);
+      }
+
+      .statisticslink:nth-of-type(3n+3) .comparisonstatistics {
+        border-top-color: var(--wiki-purple);
+      }
+
+      .statisticsvalue {
+        font-family: var(--font-sans);
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--wiki-blue);
+        line-height: 1;
+        margin-bottom: var(--space-sm);
+      }
+
+      .comparisonstatistics>div:last-child {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.3;
+        font-weight: 500;
+      }
+
+      /* Separator - Hidden in new design */
+      .separator {
+        display: none;
+      }
+
+      /* ===========================
+       FOOTER
+       =========================== */
+      #footer {
+        background: var(--bg-white);
+        border-top: 1px solid var(--border-light);
+        padding: var(--space-2xl) 0;
+        margin-top: var(--space-3xl);
+        margin-left: 300px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      #footertext {
+        max-width: calc(1600px - 300px);
+        margin: 0 auto;
+        padding: 0 var(--space-xl);
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 400;
+      }
+
+      #footertext a {
+        color: var(--wiki-blue);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      #footertext a:hover {
+        color: var(--wiki-blue-hover);
+        text-decoration: underline;
+      }
+
+      /* ===========================
+       ANIMATIONS
+       =========================== */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .section {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .section:nth-child(1) {
+        animation-delay: 0s;
+      }
+
+      .section:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+
+      .statisticslink {
+        animation: scaleIn 0.4s ease-out backwards;
+      }
+
+      .statisticslink:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+
+      .statisticslink:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+
+      .statisticslink:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+
+      .statisticslink:nth-child(5) {
+        animation-delay: 0.2s;
+      }
+
+      .statisticslink:nth-child(6) {
+        animation-delay: 0.25s;
+      }
+
+      .statisticslink:nth-child(7) {
+        animation-delay: 0.3s;
+      }
+
+      .statisticslink:nth-child(8) {
+        animation-delay: 0.35s;
+      }
+
+      .statisticslink:nth-child(9) {
+        animation-delay: 0.4s;
+      }
+
+      .statisticslink:nth-child(10) {
+        animation-delay: 0.45s;
+      }
+
+      .statisticslink:nth-child(11) {
+        animation-delay: 0.5s;
+      }
+
+      .statisticslink:nth-child(12) {
+        animation-delay: 0.55s;
+      }
+
+      .statisticslink:nth-child(n+13) {
+        animation-delay: 0.6s;
+      }
+
+      /* ===========================
+       RESPONSIVE DESIGN
+       =========================== */
+      @media (max-width: 1200px) {
+        #sidebar {
+          position: static;
+          width: 100%;
+          height: auto;
+          padding: var(--space-lg);
+          margin-bottom: var(--space-xl);
+          border-right: none;
+          border-bottom: 1px solid var(--border-light);
+        }
+
+        #sidebarlinks ul {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--space-sm);
+        }
+
+        #sidebarlinks li {
+          margin-bottom: 0;
+        }
+
+        #content {
+          margin-left: 0;
+          max-width: 1600px;
+        }
+
+        #footer {
+          margin-left: 0;
+        }
+
+        #footertext {
+          max-width: 1600px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        #header>div {
+          flex-direction: column;
+          gap: var(--space-lg);
+        }
+
+        #headersearch {
+          width: 100%;
+          max-width: none;
+        }
+
+        #content {
+          padding: var(--space-xl) var(--space-lg);
+        }
+
+        .section {
+          padding: var(--space-xl) var(--space-lg);
+        }
+
+        .section form {
+          flex-direction: column;
+        }
+
+        #compare {
+          min-width: 0;
+        }
+
+        .section input[type="submit"] {
+          width: 100%;
+        }
+
+        #statisticssection {
+          padding: var(--space-xl) var(--space-lg);
+          justify-content: center;
+        }
+
+        .comparisonstatistics {
+          min-width: 120px;
+        }
+
+        .statisticsvalue {
+          font-size: 2rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #headersearch form {
+          flex-direction: column;
+        }
+
+        #headersearchbutton {
+          width: 100%;
+        }
+
+        .section h2 {
+          font-size: 1.25rem;
+        }
+
+        #compare {
+          font-size: 1rem;
+          padding: var(--space-md) var(--space-lg);
+        }
+
+        .section input[type="submit"] {
+          font-size: 1rem;
+          padding: var(--space-md) var(--space-xl);
+        }
+
+        .comparisonstatistics {
+          min-width: 100px;
+          padding: var(--space-md);
+        }
+
+        .statisticsvalue {
+          font-size: 1.75rem;
+        }
+
+        .comparisonstatistics>div:last-child {
+          font-size: 0.75rem;
+        }
+      }
+
+      /* ===========================
+       ACCESSIBILITY
+       =========================== */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 0;
+        background: var(--wiki-blue);
+        color: white;
+        padding: var(--space-md) var(--space-lg);
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        z-index: 10000;
+      }
+
+      .skip-link:focus {
+        top: var(--space-md);
+        left: var(--space-md);
+        outline: 3px solid var(--wiki-accent);
+        outline-offset: 3px;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--wiki-blue);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="#content" class="skip-link">Skip to main content</a>
+
+    <div id="header">
+      <div>
+        <div id="logo"><a href="./index.html">WikiProvenance</a></div>
+        <div id="headersearch">
+          <form action="./search.html" method="get">
+            <input id="headersearchtext" type="text" name="search" placeholder="Johann Sebastian Bach"
+              aria-label="Search for Wikidata items" />
+            <button id="headersearchbutton" type="submit" value="Search">Search</button>
+          </form>
+        </div>
+      </div>
     </div>
-  </div>
-  <div id="sidebar">
-    <div id="sidebarlinks">
-      <ul>
-        <li><a href="#statisticssection">Overall Statistics</a></li>
-        <li><a href="#referencessection">References</a></li>
-        <li><a href="#externalidentifierssection">External identifiers</a></li>
-        <li><a href="#commons.wikimedialinkssection">Commons</a></li>
-        <li><a href="#wikipedialinkssection">Wikipedia</a></li>
-        <li><a href="#wikinewslinkssection">Wikinews</a></li>
-        <li><a href="#wikibookslinkssection">Wikibooks</a></li>
-        <li><a href="#wikisourcelinkssection">Wikisource</a></li>
-        <li><a href="#wiktionarylinkssection">Wiktionary</a></li>
-        <li><a href="#wikiquotelinkssection">Wikiquote</a></li>
-        <li><a href="#wikivoyagelinkssection">Wikivoyage</a></li>
-        <li><a href="#wikiversitylinkssection">Wikiversity</a></li>
-        <li><a href="#wikispecieslinkssection">Wikispecies</a> </li>
-        <li><a href="./wikiprovenance.html">About</a> </li>
+
+    <div id="sidebar">
+      <div id="sidebarlinks">
+        <ul>
+          <li><a href="#statisticssection">Overall Statistics</a></li>
+          <li><a href="#referencessection">References</a></li>
+          <li><a href="#externalidentifierssection">External identifiers</a></li>
+          <li><a href="#commons.wikimedialinkssection">Commons</a></li>
+          <li><a href="#wikipedialinkssection">Wikipedia</a></li>
+          <li><a href="#wikinewslinkssection">Wikinews</a></li>
+          <li><a href="#wikibookslinkssection">Wikibooks</a></li>
+          <li><a href="#wikisourcelinkssection">Wikisource</a></li>
+          <li><a href="#wiktionarylinkssection">Wiktionary</a></li>
+          <li><a href="#wikiquotelinkssection">Wikiquote</a></li>
+          <li><a href="#wikivoyagelinkssection">Wikivoyage</a></li>
+          <li><a href="#wikiversitylinkssection">Wikiversity</a></li>
+          <li><a href="#wikispecieslinkssection">Wikispecies</a></li>
+          <li><a href="./wikiprovenance.html">About</a></li>
+        </ul>
+      </div>
     </div>
-  </div>
-  <div id="content">
-    <div class="section">
-      <h2>Compare</h2>
-      <form action="./compare.html" onsubmit="getLinksAndCompare(event, this)">
-        <input id="compare" name="compare" type="text" placeholder="Q1339, Q254"></input>
-        <input type="submit">
-      </form>
+
+    <div id="content">
+      <div class="section">
+        <h2>Compare</h2>
+        <form action="./compare.html" onsubmit="getLinksAndCompare(event, this)">
+          <input id="compare" name="compare" type="text" placeholder="Q1339, Q254"
+            aria-label="Enter Wikidata IDs to compare (comma-separated)" />
+          <input type="submit" value="Compare">
+        </form>
+      </div>
+
+      <div class="section" id="statisticssection">
+        <h2>Comparison of statistics on sources describing <div id="itemLabel"></div>
+        </h2>
+
+        <a class="statisticslink" href="#externalidentifierssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="externalidentifiersvalue">0</div>
+            <div>external identifiers</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikipedialinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikipedialinksvalue">0</div>
+            <div>articles on Wikipedia</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikinewslinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikinewslinksvalue">0</div>
+            <div>articles on Wikinews</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikibookslinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikibookslinksvalue">0</div>
+            <div>articles on Wikibooks</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikisourcelinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikisourcelinksvalue">0</div>
+            <div>articles on Wikisource</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wiktionarylinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wiktionarylinksvalue">0</div>
+            <div>articles on Wiktionary</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikiquotelinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikiquotelinksvalue">0</div>
+            <div>articles on Wikiquote</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikivoyagelinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikivoyagelinksvalue">0</div>
+            <div>articles on Wikivoyage</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikiversitylinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikiversitylinksvalue">0</div>
+            <div>articles on Wikiversity</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#wikispecieslinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="wikispecieslinksvalue">0</div>
+            <div>articles on Wikispecies</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#statisticssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="referencesvalue">0</div>
+            <div>% statements with references on Wikidata</div>
+          </div>
+        </a>
+        <div class="separator"></div>
+
+        <a class="statisticslink" href="#commons.wikimedialinkssection">
+          <div class="comparisonstatistics">
+            <div class="statisticsvalue" id="commons.wikimedialinksvalue">0</div>
+            <div>categories on Commons</div>
+          </div>
+        </a>
+      </div>
     </div>
-    <div class="section" id="statisticssection">
-      <h2>Comparison of statistics on sources describing <div id="itemLabel"></div>
-      </h2>
-      <a class="statisticslink" href="#externalidentifierssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="externalidentifiersvalue">0</div>
-          <div>external identifiers</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikipedialinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikipedialinksvalue">0</div>
-          <div>articles on Wikipedia</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikinewslinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikinewslinksvalue">0</div>
-          <div>articles on Wikinews</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikibookslinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikibookslinksvalue">0</div>
-          <div>articles on Wikibooks</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikisourcelinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikisourcelinksvalue">0</div>
-          <div>articles on Wikisource</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wiktionarylinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wiktionarylinksvalue">0</div>
-          <div>articles on Wiktionary</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikiquotelinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikiquotelinksvalue">0</div>
-          <div>articles on Wikiquote</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikivoyagelinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikivoyagelinksvalue">0</div>
-          <div>articles on Wikivoyage</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikiversitylinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikiversitylinksvalue">0</div>
-          <div>articles on Wikiversity</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#wikispecieslinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="wikispecieslinksvalue">0</div>
-          <div>articles on Wikispecies</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#statisticssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="referencesvalue">0</div>
-          <div>% statements with references on Wikidata</div>
-        </div>
-      </a>
-      <div class="separator"></div>
-      <a class="statisticslink" href="#commons.wikimedialinkssection">
-        <div class="comparisonstatistics">
-          <div class="statisticsvalue" id="commons.wikimedialinksvalue">0</div>
-          <div>categories on Commons</div>
-        </div>
-      </a>
+
+    <div id="footer">
+      <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
+          href="https://mediawiki.org/">MediaWiki</a> API</p>
     </div>
-  </div>
-  <div id="footer">
-    <p id="footertext">Powered by <a href="https://www.wikidata.org/">Wikidata</a> and <a
-        href="https://mediawiki.org/">MediaWiki</a> API</p>
-  </div>
-  <script type="text/javascript" src="wikiprovenance.js"> </script>
-  <script>
-    window.addEventListener('load', function () {
-      getLinksAndCompare();
-    });
-  </script>
-</body>
+
+    <script type="text/javascript" src="wikiprovenance.js"></script>
+    <script>
+      window.addEventListener('load', function () {
+        // Check if there are items to compare in the URL
+        const compareParam = new URLSearchParams(window.location.search).get('compare');
+
+        if (compareParam && compareParam.trim()) {
+          // If compare parameter exists in URL, perform comparison
+          getLinksAndCompare(null, null);
+        } else {
+          // Optional: Set default items in the input field
+          const compareInput = document.getElementById('compare');
+          if (compareInput && !compareInput.value) {
+            compareInput.value = 'Q1339, Q254'; // Default comparison
+          }
+        }
+      });
+    </script>
+  </body>
 
 </html>
