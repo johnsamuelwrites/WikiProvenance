@@ -6,7 +6,7 @@ WikiProvenance provides the following features
 - Bookmarkable links
 
 ## Demo
-- [WikiProvenance (on https://rawgit.com)](https://rawgit.com/johnsamuelwrites/WikiProvenance/master/index.html)
+- [WikiProvenance (on Toolforge)](https://wikiprovenance.toolforge.org)
 - [WikiProvenance](https://johnsamuel.info/WikiProvenance/index.html)
 
 
@@ -19,8 +19,7 @@ WikiProvenance provides the following features
 
 ## Tools used
 - [Stack Overflow](https://stackoverflow.com/)
-- [ChatGPT](https://chat.openai.com/)
-- [Google Bard](https://bard.google.com/)
+- Large Language Models
 
 ## Acknowledgements
 - Wikidata Community
